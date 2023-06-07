@@ -8,118 +8,95 @@
 
     <Spinner
         android:id="@+id/dropdownButton"
-        android:layout_width="184dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="28dp"
-        app:layout_constraintBottom_toTopOf="@+id/button3"
-        app:layout_constraintEnd_toStartOf="@+id/dropdownButton2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="267dp"
+        android:layout_height="78dp"
+        tools:layout_editor_absoluteX="29dp"
+        tools:layout_editor_absoluteY="65dp" />
 
     <Spinner
         android:id="@+id/dropdownButton2"
-        android:layout_width="184dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="114dp"
-        app:layout_constraintEnd_toStartOf="@+id/button"
-        app:layout_constraintStart_toEndOf="@+id/dropdownButton"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="267dp"
+        android:layout_height="78dp"
+        tools:layout_editor_absoluteX="316dp"
+        tools:layout_editor_absoluteY="65dp" />
 
     <Button
         android:id="@+id/button"
-        android:layout_width="153dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="5dp"
+        android:layout_width="267dp"
+        android:layout_height="78dp"
         android:text="Show orbits"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/dropdownButton2"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="20sp"
+        tools:layout_editor_absoluteX="962dp"
+        tools:layout_editor_absoluteY="65dp" />
 
     <Button
         android:id="@+id/button3"
-        android:layout_width="153dp"
-        android:layout_height="54dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="27dp"
+        android:layout_width="267dp"
+        android:layout_height="78dp"
         android:text="Check collision"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dropdownButton" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="250dp"
-        android:layout_marginBottom="37dp"
-        android:contentDescription="Play"
-        app:layout_constraintBottom_toTopOf="@+id/seekBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:srcCompat="@android:drawable/ic_media_play" />
-
-    <ImageButton
-        android:id="@+id/imageButton2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="73dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="122dp"
-        android:contentDescription="Next"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageButton"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:srcCompat="@android:drawable/ic_media_next" />
-
-    <ImageButton
-        android:id="@+id/imageButton3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="68dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="79dp"
-        android:layout_marginBottom="65dp"
-        android:contentDescription="Back"
-        app:layout_constraintBottom_toBottomOf="@+id/seekBar"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton"
-        app:layout_constraintStart_toEndOf="@+id/recyclerView"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:srcCompat="@android:drawable/ic_media_previous" />
-
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="393dp"
-        android:layout_height="28dp"
-        android:layout_marginTop="37dp"
-        android:layout_marginEnd="83dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton" />
+        android:textSize="20sp"
+        tools:layout_editor_absoluteX="44dp"
+        tools:layout_editor_absoluteY="173dp" />
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="85dp"
-        android:layout_height="19dp"
-        android:layout_marginStart="241dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="236dp"
+        android:layout_width="162dp"
+        android:layout_height="41dp"
         android:text="Visualitzation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/button3"
-        app:layout_constraintTop_toBottomOf="@+id/dropdownButton2" />
+        android:textIsSelectable="true"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="729dp"
+        tools:layout_editor_absoluteY="173dp" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="105dp"
+        android:layout_height="105dp"
+        android:contentDescription="Next"
+        app:srcCompat="@android:drawable/ic_media_next"
+        tools:layout_editor_absoluteX="992dp"
+        tools:layout_editor_absoluteY="272dp" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="105dp"
+        android:layout_height="105dp"
+        android:contentDescription="Play"
+        app:srcCompat="@android:drawable/ic_media_play"
+        tools:layout_editor_absoluteX="763dp"
+        tools:layout_editor_absoluteY="272dp" />
+
+    <ImageButton
+        android:id="@+id/imageButton3"
+        android:layout_width="105dp"
+        android:layout_height="105dp"
+        android:contentDescription="Back"
+        app:srcCompat="@android:drawable/ic_media_previous"
+        tools:layout_editor_absoluteX="521dp"
+        tools:layout_editor_absoluteY="272dp" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="576dp"
+        android:layout_height="33dp"
+        tools:layout_editor_absoluteX="521dp"
+        tools:layout_editor_absoluteY="574dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="202dp"
-        android:layout_height="135dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button3" />
+        android:layout_width="262dp"
+        android:layout_height="335dp"
+        android:scrollbarSize="6sp"
+        tools:layout_editor_absoluteX="59dp"
+        tools:layout_editor_absoluteY="284dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="247dp"
+        android:layout_height="58dp"
+        android:text="Collision:"
+        android:textSize="28sp"
+        tools:layout_editor_absoluteX="44dp"
+        tools:layout_editor_absoluteY="680dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
