@@ -2,12 +2,12 @@
     <string name="app_name">Satellite_Space_Collision_prevision</string>
     <string name="play">Play</string>
     <string name="back">Back</string>
-    <string name="visualitzation">Visualitzation</string>
+    <string name="Display">Visualitzation</string>
     <string name="next">Next</string>
     <string name="collision">Collision:</string>
     <string name="check_collision">Check collision</string>
     <string name="show_all_orbits">Show all orbits</string>
-    <string name="rechargesatelites">RechargeSatelites</string>
+    <string name="recharge_satellites">RechargeSatelites</string>
     <string name="configuration">Configuration</string>
     <string name="this_is_configuration_menu">This is configuration menu</string>
 </resources>
