@@ -12,7 +12,11 @@
         android:theme="@style/Theme.Satellite_Space_Collision_prevision"
         tools:targetApi="31">
         <activity
-            android:name="MainActivity"
+            android:name=".Configuration"
+            android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="landscape">
             <intent-filter>

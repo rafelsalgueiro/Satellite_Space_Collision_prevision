@@ -9,4 +9,5 @@
     <string name="show_all_orbits">Show all orbits</string>
     <string name="rechargesatelites">RechargeSatelites</string>
     <string name="configuration">Configuration</string>
+    <string name="this_is_configuration_menu">This is configuration menu</string>
 </resources>
