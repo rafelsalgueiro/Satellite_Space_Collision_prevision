@@ -4,99 +4,179 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:visibility="visible"
     tools:context="MainActivity">
-
-    <Spinner
-        android:id="@+id/dropdownButton"
-        android:layout_width="267dp"
-        android:layout_height="78dp"
-        tools:layout_editor_absoluteX="29dp"
-        tools:layout_editor_absoluteY="65dp" />
-
-    <Spinner
-        android:id="@+id/dropdownButton2"
-        android:layout_width="267dp"
-        android:layout_height="78dp"
-        tools:layout_editor_absoluteX="316dp"
-        tools:layout_editor_absoluteY="65dp" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="267dp"
-        android:layout_height="78dp"
-        android:text="Show orbits"
-        android:textSize="20sp"
-        tools:layout_editor_absoluteX="962dp"
-        tools:layout_editor_absoluteY="65dp" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="267dp"
-        android:layout_height="78dp"
-        android:text="Check collision"
-        android:textSize="20sp"
-        tools:layout_editor_absoluteX="44dp"
-        tools:layout_editor_absoluteY="173dp" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="162dp"
-        android:layout_height="41dp"
-        android:text="Visualitzation"
-        android:textIsSelectable="true"
-        android:textSize="24sp"
-        tools:layout_editor_absoluteX="729dp"
-        tools:layout_editor_absoluteY="173dp" />
-
-    <ImageButton
-        android:id="@+id/imageButton2"
-        android:layout_width="105dp"
-        android:layout_height="105dp"
-        android:contentDescription="Next"
-        app:srcCompat="@android:drawable/ic_media_next"
-        tools:layout_editor_absoluteX="992dp"
-        tools:layout_editor_absoluteY="272dp" />
 
     <ImageButton
         android:id="@+id/imageButton"
         android:layout_width="105dp"
         android:layout_height="105dp"
-        android:contentDescription="Play"
-        app:srcCompat="@android:drawable/ic_media_play"
-        tools:layout_editor_absoluteX="763dp"
-        tools:layout_editor_absoluteY="272dp" />
+        android:layout_marginStart="141dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="128dp"
+        android:contentDescription="@string/play"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton2"
+        app:layout_constraintStart_toEndOf="@+id/imageButton3"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:srcCompat="@android:drawable/ic_media_play" />
 
     <ImageButton
         android:id="@+id/imageButton3"
         android:layout_width="105dp"
         android:layout_height="105dp"
-        android:contentDescription="Back"
-        app:srcCompat="@android:drawable/ic_media_previous"
-        tools:layout_editor_absoluteX="521dp"
-        tools:layout_editor_absoluteY="272dp" />
+        android:layout_marginStart="209dp"
+        android:layout_marginTop="184dp"
+        android:contentDescription="@string/back"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton"
+        app:layout_constraintHorizontal_bias="0.007"
+        app:layout_constraintStart_toEndOf="@+id/recyclerView"
+        app:layout_constraintTop_toBottomOf="@+id/dropdownButton2"
+        app:srcCompat="@android:drawable/ic_media_previous" />
 
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="576dp"
-        android:layout_height="33dp"
-        tools:layout_editor_absoluteX="521dp"
-        tools:layout_editor_absoluteY="574dp" />
+    <Spinner
+        android:id="@+id/dropdownButton2"
+        android:layout_width="267dp"
+        android:layout_height="78dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="51dp"
+        app:layout_constraintEnd_toStartOf="@+id/button"
+        app:layout_constraintStart_toEndOf="@+id/dropdownButton"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="262dp"
-        android:layout_height="335dp"
-        android:scrollbarSize="6sp"
-        tools:layout_editor_absoluteX="59dp"
-        tools:layout_editor_absoluteY="284dp" />
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="191dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="418dp"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="394dp"
+        android:text="@string/visualitzation"
+        android:textIsSelectable="true"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/button3"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
+
+    <ImageButton
+        android:id="@+id/imageButton5"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="639dp"
+        android:contentDescription="@string/configuration"
+        android:src="@android:drawable/ic_menu_preferences"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.344"
+        tools:src="@android:drawable/ic_menu_preferences" />
+
+    <ImageButton
+        android:id="@+id/imageButton4"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="639dp"
+        android:contentDescription="@string/rechargesatelites"
+        android:src="@android:drawable/stat_notify_sync"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton5"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.344"
+        tools:src="@android:drawable/stat_notify_sync_noanim" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="105dp"
+        android:layout_height="105dp"
+        android:layout_marginTop="184dp"
+        android:layout_marginEnd="188dp"
+        android:contentDescription="@string/next"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintStart_toEndOf="@+id/imageButton"
+        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:srcCompat="@android:drawable/ic_media_next" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="247dp"
         android:layout_height="58dp"
-        android:text="Collision:"
+        android:layout_marginStart="44dp"
+        android:layout_marginEnd="989dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/collision"
         android:textSize="28sp"
-        tools:layout_editor_absoluteX="44dp"
-        tools:layout_editor_absoluteY="680dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="249dp"
+        android:layout_height="255dp"
+        android:layout_marginStart="39dp"
+        android:layout_marginTop="33dp"
+        android:layout_marginBottom="20dp"
+        android:scrollbarSize="6sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintEnd_toStartOf="@+id/seekBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button3"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="576dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="200dp"
+        android:layout_marginEnd="188dp"
+        android:layout_marginBottom="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/recyclerView" />
+
+    <Spinner
+        android:id="@+id/dropdownButton"
+        android:layout_width="267dp"
+        android:layout_height="78dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="51dp"
+        app:layout_constraintEnd_toStartOf="@+id/dropdownButton2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="267dp"
+        android:layout_height="78dp"
+        android:layout_marginStart="39dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/check_collision"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+        app:layout_constraintEnd_toStartOf="@+id/textView2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dropdownButton" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="267dp"
+        android:layout_height="78dp"
+        android:layout_marginStart="199dp"
+        android:layout_marginTop="51dp"
+        android:layout_marginEnd="236dp"
+        android:text="@string/show_orbits"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/dropdownButton2"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
