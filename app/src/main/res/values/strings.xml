@@ -10,4 +10,14 @@
     <string name="recharge_satellites">RechargeSatelites</string>
     <string name="configuration">Configuration</string>
     <string name="this_is_configuration_menu">This is configuration menu</string>
+    <string name="master_ip_address">Master IP address:</string>
+    <string name="master_password">Master password:</string>
+    <string name="liquid_galaxy">Liquid Galaxy</string>
+    <string name="clear_kml_data">Clear kml data</string>
+    <string name="reboot">Reboot</string>
+    <string name="power_off">Power off</string>
+    <string name="status">Status:</string>
+    <string name="_127_0_0_1">127.0.0.1</string>
+    <string name="connection">Connection</string>
+    <string name="connect">Connect</string>
 </resources>
