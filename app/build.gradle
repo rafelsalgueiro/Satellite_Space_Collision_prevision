@@ -50,6 +50,7 @@ android {
 
 dependencies {
 
+    implementation 'com.hierynomus:sshj:0.28.1' // Library to connect to the server via SSH
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
