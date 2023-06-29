@@ -4,7 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Configuration">
+    tools:context="Configuration">
+
+    <Button
+        android:id="@+id/disconnectButton"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="229dp"
+        android:layout_height="93dp"
+        android:layout_marginStart="324dp"
+        android:text="@string/Disconnect"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/MasterPassword" />
 
     <EditText
         android:id="@+id/MasterPassword"
@@ -49,25 +61,23 @@
         android:textSize="30sp"
         app:layout_constraintBottom_toTopOf="@+id/MasterPassword"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/Status"
         android:autofillHints="@string/_127_0_0_1" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/Status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="92dp"
-        android:shadowColor="@color/white"
         android:text="@string/status"
-        android:textColorHighlight="@color/teal_700"
         android:textSize="30sp"
         app:emojiCompatEnabled="false"
         app:layout_constraintBottom_toTopOf="@+id/IPAddress"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/connectionText" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/connectionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="208dp"
@@ -76,23 +86,21 @@
         android:textColorHighlight="@color/teal_700"
         android:textSize="30sp"
         app:emojiCompatEnabled="false"
-        app:layout_constraintBottom_toTopOf="@+id/textView3"
+        app:layout_constraintBottom_toTopOf="@+id/Status"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/ConnectButton"
         style="@style/Widget.AppCompat.Button"
-        android:layout_width="228dp"
+        android:layout_width="229dp"
         android:layout_height="93dp"
-        android:layout_marginStart="180dp"
-        android:background="#FF0F0F"
-        android:backgroundTint="@color/purple_500"
+        android:layout_marginStart="72dp"
         android:text="@string/connect"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/MasterPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/MasterPassword"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -102,48 +110,49 @@
         app:layout_constraintGuide_begin="20dp" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/rebootButton"
         android:layout_width="228dp"
         android:layout_height="93dp"
         android:text="@string/reboot"
         android:textSize="25sp"
-        app:layout_constraintBottom_toTopOf="@+id/button6"
-        app:layout_constraintEnd_toEndOf="@+id/button6"
+        app:layout_constraintBottom_toTopOf="@+id/powerOffButton"
+        app:layout_constraintEnd_toEndOf="@+id/powerOffButton"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/button6"
-        app:layout_constraintTop_toBottomOf="@+id/button4" />
+        app:layout_constraintStart_toStartOf="@+id/powerOffButton"
+        app:layout_constraintTop_toBottomOf="@+id/clearKMLDataButton" />
+
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/lgText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/liquid_galaxy"
         android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView4"
-        app:layout_constraintEnd_toEndOf="@+id/button4"
-        app:layout_constraintStart_toStartOf="@+id/button4"
-        app:layout_constraintTop_toTopOf="@+id/textView4" />
+        app:layout_constraintBottom_toBottomOf="@+id/connectionText"
+        app:layout_constraintEnd_toEndOf="@+id/clearKMLDataButton"
+        app:layout_constraintStart_toStartOf="@+id/clearKMLDataButton"
+        app:layout_constraintTop_toTopOf="@+id/connectionText" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/clearKMLDataButton"
         android:layout_width="266dp"
         android:layout_height="87dp"
         android:text="@string/clear_kml_data"
         android:textSize="25sp"
-        app:layout_constraintBottom_toTopOf="@+id/button5"
-        app:layout_constraintEnd_toEndOf="@+id/button5"
-        app:layout_constraintStart_toStartOf="@+id/button5"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintBottom_toTopOf="@+id/rebootButton"
+        app:layout_constraintEnd_toEndOf="@+id/rebootButton"
+        app:layout_constraintStart_toStartOf="@+id/rebootButton"
+        app:layout_constraintTop_toBottomOf="@+id/lgText" />
 
     <Button
-        android:id="@+id/button6"
-        android:layout_width="228sp"
-        android:layout_height="93sp"
+        android:id="@+id/powerOffButton"
+        android:layout_width="228dp"
+        android:layout_height="93dp"
         android:layout_marginEnd="254dp"
         android:text="@string/power_off"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button5" />
+        app:layout_constraintTop_toBottomOf="@+id/rebootButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
