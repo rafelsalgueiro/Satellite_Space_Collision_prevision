@@ -20,4 +20,6 @@
     <string name="_127_0_0_1">127.0.0.1</string>
     <string name="connection">Connection</string>
     <string name="connect">Connect</string>
+    <string name="Disconnect"> Disconnect </string>
+    <string name="status_label">Status: %1$s</string>
 </resources>

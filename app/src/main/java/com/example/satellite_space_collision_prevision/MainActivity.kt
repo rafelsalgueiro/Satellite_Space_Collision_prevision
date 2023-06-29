@@ -1,8 +1,9 @@
 package com.example.satellite_space_collision_prevision
 
+import Configuration
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.satellite_space_collision_prevision.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
