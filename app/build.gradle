@@ -38,11 +38,9 @@ android {
     flavorDimensions "default"
     productFlavors {
         tablet {
-            // Configuración específica para tablets
             dimension "default"
         }
         mobile {
-            // Configuración específica para dispositivos móviles
             dimension "default"
         }
     }

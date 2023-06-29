@@ -1,6 +1,5 @@
 package com.example.satellite_space_collision_prevision
 
-import SSHConnection
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -8,6 +7,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.satellite_space_collision_prevision.databinding.ConfigurationBinding
+import utilities.SSHConnection
 
 class Configuration : AppCompatActivity() {
     private val binding by lazy { ConfigurationBinding.inflate(layoutInflater) }
