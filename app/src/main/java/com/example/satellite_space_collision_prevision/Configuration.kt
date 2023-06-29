@@ -7,6 +7,9 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.satellite_space_collision_prevision.databinding.ConfigurationBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import utilities.SSHConnection
 
 class Configuration : AppCompatActivity() {
@@ -30,15 +33,17 @@ class Configuration : AppCompatActivity() {
             val ipAddress = ipAddressEditText.text.toString()
             val masterPassword = masterPasswordEditText.text.toString()
 
-            sshConnection = SSHConnection(ipAddress, masterPassword)
-
-            if (sshConnection.connect()) {
-                // Connection established successfully
-                // Perform any operations you need on the SSH connection
-                updateStatusTextView("Connected")
-            } else {
-                // Connection failed
-                updateStatusTextView("Disconnected")
+            CoroutineScope(Dispatchers.Main).launch {
+                val sshConnection = SSHConnection(ipAddress, masterPassword)
+                val isConnected = sshConnection.connect()
+                if (isConnected) {
+                    // Connection established successfully
+                    // Perform any operations you need on the SSH connection
+                    updateStatusTextView("Connected")
+                } else {
+                    // Connection failed
+                    updateStatusTextView("Disconnected")
+                }
             }
         }
 

@@ -3,6 +3,8 @@ package utilities
 import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
@@ -14,26 +16,29 @@ class SSHConnection(private val ipAddress: String, private val password: String)
 
     val isConnected: Boolean
         get() = session != null && session!!.isConnected
-    fun connect(): Boolean {
-        try {
-            val jsch = JSch()
-            val session = jsch.getSession("lg", ipAddress, 22)
-            session.setPassword(password)
+    suspend fun connect(): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val jsch = JSch()
+                val session = jsch.getSession("lg", ipAddress, 22)
+                session.setPassword(password)
 
-            val prop = Properties()
-            prop.put("StrictHostKeyChecking", "no")
-            session.setConfig(prop)
+                val prop = Properties()
+                prop.put("StrictHostKeyChecking", "no")
+                session.setConfig(prop)
 
-            session.connect()
+                session.connect()
 
-            val channel = session.openChannel("exec") as ChannelExec
-            val baos = ByteArrayOutputStream()
-            channel.outputStream = baos
-            return true
-        } catch (e: Exception) {
-            e.printStackTrace()
+                val channel = session.openChannel("exec") as ChannelExec
+                val baos = ByteArrayOutputStream()
+                channel.outputStream = baos
+
+                true
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
+            }
         }
-        return false
     }
 
     fun disconnect() {
