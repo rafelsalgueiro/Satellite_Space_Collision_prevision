@@ -18,7 +18,6 @@ class Configuration : AppCompatActivity() {
     private lateinit var masterPasswordEditText: EditText
     private lateinit var connectButton: Button
     private lateinit var statusTextView: TextView
-    private lateinit var sshConnection: SSHConnection
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +36,28 @@ class Configuration : AppCompatActivity() {
                 val sshConnection = SSHConnection(ipAddress, masterPassword)
                 val isConnected = sshConnection.connect()
                 if (isConnected) {
+
+                    binding.powerOffButton.setOnClickListener {
+                        if (sshConnection.isConnected) {
+                            val command = "lg-poweroff" // Command to power off all displays
+                            sshConnection.executeCommand(command)
+                        }
+                    }
+
+                    binding.rebootButton.setOnClickListener {
+                        if (sshConnection.isConnected) {
+                            val command = "lg-reboot" // Command to reboot the LG
+                            sshConnection.executeCommand(command)
+                        }
+                    }
+
+                    val disconnectButton: Button = binding.disconnectButton
+                    disconnectButton.setOnClickListener {
+                        if (sshConnection.isConnected) {
+                            sshConnection.disconnect()
+                        }
+                        updateStatusTextView("Disconnected")
+                    }
                     // Connection established successfully
                     // Perform any operations you need on the SSH connection
                     updateStatusTextView("Connected")
@@ -47,27 +68,9 @@ class Configuration : AppCompatActivity() {
             }
         }
 
-        binding.powerOffButton.setOnClickListener {
-            if (sshConnection.isConnected) {
-                val command = "lg-poweroff" // Command to power off
-                sshConnection.executeCommand(command)
-            }
-        }
 
-        binding.rebootButton.setOnClickListener {
-            if (sshConnection.isConnected) {
-                val command = "lg-reboot" // Command to reboot the LG
-                sshConnection.executeCommand(command)
-            }
-        }
 
-        val disconnectButton: Button = binding.disconnectButton
-        disconnectButton.setOnClickListener {
-            if (sshConnection.isConnected) {
-                sshConnection.disconnect()
-            }
-            updateStatusTextView("Disconnected")
-        }
+
         binding.returnMainPage.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

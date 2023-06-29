@@ -16,6 +16,8 @@ class SSHConnection(private val ipAddress: String, private val password: String)
 
     val isConnected: Boolean
         get() = session != null && session!!.isConnected
+
+
     suspend fun connect(): Boolean {
         return withContext(Dispatchers.IO) {
             try {
