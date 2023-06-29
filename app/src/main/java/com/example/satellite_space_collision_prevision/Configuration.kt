@@ -1,9 +1,12 @@
+package com.example.satellite_space_collision_prevision
+
+import SSHConnection
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.satellite_space_collision_prevision.R
 import com.example.satellite_space_collision_prevision.databinding.ConfigurationBinding
 
 class Configuration : AppCompatActivity() {
@@ -39,37 +42,31 @@ class Configuration : AppCompatActivity() {
             }
         }
 
-        val powerOffButton = binding.powerOffButton
-        val rebootButton = binding.rebootButton
-        val clearKMLDataButton = binding.clearKMLDataButton
-
-        powerOffButton.setOnClickListener {
+        binding.powerOffButton.setOnClickListener {
             if (sshConnection.isConnected) {
-                val command = "sudo lg-reboot -p" // Command to power off using lg-reboot with sudo
+                val command = "lg-poweroff" // Command to power off
                 sshConnection.executeCommand(command)
-                // Handle the output if needed
             }
         }
 
-        rebootButton.setOnClickListener {
+        binding.rebootButton.setOnClickListener {
             if (sshConnection.isConnected) {
-                val command = "sudo lg-reboot -r" // Command to reboot using lg-reboot with sudo
+                val command = "lg-reboot" // Command to reboot the LG
                 sshConnection.executeCommand(command)
-                // Handle the output if needed
             }
         }
 
-
-        clearKMLDataButton.setOnClickListener {
-            // Perform action to clear KML data
-            // You can call a function here to clear the KML data
+        val disconnectButton: Button = binding.disconnectButton
+        disconnectButton.setOnClickListener {
+            if (sshConnection.isConnected) {
+                sshConnection.disconnect()
+            }
+            updateStatusTextView("Disconnected")
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        sshConnection.disconnect()
-        updateStatusTextView("Disconnected")
+        binding.returnMainPage.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun updateStatusTextView(status: String) {

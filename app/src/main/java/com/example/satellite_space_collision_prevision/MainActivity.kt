@@ -1,6 +1,6 @@
 package com.example.satellite_space_collision_prevision
 
-import Configuration
+
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        binding.imageButton5.setOnClickListener {
+        binding.configurationButton.setOnClickListener {
             val intent = Intent(this, Configuration::class.java)
             startActivity(intent)
         }

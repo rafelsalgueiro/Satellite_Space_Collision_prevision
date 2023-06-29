@@ -7,43 +7,43 @@
     tools:context=".MainActivity">
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/playButton"
         android:layout_width="105dp"
         android:layout_height="105dp"
         android:layout_marginStart="141dp"
         android:layout_marginTop="72dp"
         android:layout_marginEnd="128dp"
         android:contentDescription="@string/play"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton2"
-        app:layout_constraintStart_toEndOf="@+id/imageButton3"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintEnd_toStartOf="@+id/nextButton"
+        app:layout_constraintStart_toEndOf="@+id/backButton"
+        app:layout_constraintTop_toBottomOf="@+id/visualitzationText"
         app:srcCompat="@android:drawable/ic_media_play" />
 
     <ImageButton
-        android:id="@+id/imageButton3"
+        android:id="@+id/backButton"
         android:layout_width="105dp"
         android:layout_height="105dp"
         android:layout_marginStart="209dp"
         android:layout_marginTop="184dp"
         android:contentDescription="@string/back"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton"
+        app:layout_constraintEnd_toStartOf="@+id/playButton"
         app:layout_constraintHorizontal_bias="0.007"
         app:layout_constraintStart_toEndOf="@+id/recyclerView"
-        app:layout_constraintTop_toBottomOf="@+id/dropdownButton2"
+        app:layout_constraintTop_toBottomOf="@+id/selectSat2"
         app:srcCompat="@android:drawable/ic_media_previous" />
 
     <Spinner
-        android:id="@+id/dropdownButton2"
+        android:id="@+id/selectSat2"
         android:layout_width="267dp"
         android:layout_height="78dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="51dp"
-        app:layout_constraintEnd_toStartOf="@+id/button"
-        app:layout_constraintStart_toEndOf="@+id/dropdownButton"
+        app:layout_constraintEnd_toStartOf="@+id/showAllOrbitsButton"
+        app:layout_constraintStart_toEndOf="@+id/selectSat1"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/visualitzationText"
         android:layout_width="191dp"
         android:layout_height="53dp"
         android:layout_marginStart="418dp"
@@ -53,11 +53,11 @@
         android:textIsSelectable="true"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button3"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintStart_toEndOf="@+id/checkCollisionButton"
+        app:layout_constraintTop_toBottomOf="@+id/showAllOrbitsButton" />
 
     <ImageButton
-        android:id="@+id/imageButton5"
+        android:id="@+id/configurationButton"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_marginStart="1184dp"
@@ -71,19 +71,19 @@
         tools:src="@android:drawable/ic_menu_preferences" />
 
     <ImageButton
-        android:id="@+id/imageButton4"
+        android:id="@+id/syncButton"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_marginTop="48dp"
         android:layout_marginEnd="28dp"
         android:contentDescription="@string/recharge_satellites"
         android:src="@android:drawable/stat_notify_sync_noanim"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton5"
+        app:layout_constraintEnd_toStartOf="@+id/configurationButton"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@android:drawable/stat_notify_sync_noanim" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/nextButton"
         android:layout_width="105dp"
         android:layout_height="105dp"
         android:layout_marginTop="184dp"
@@ -91,12 +91,12 @@
         android:contentDescription="@string/next"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.6"
-        app:layout_constraintStart_toEndOf="@+id/imageButton"
-        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:layout_constraintStart_toEndOf="@+id/playButton"
+        app:layout_constraintTop_toBottomOf="@+id/showAllOrbitsButton"
         app:srcCompat="@android:drawable/ic_media_next" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/probabilityButton"
         android:layout_width="247dp"
         android:layout_height="58dp"
         android:layout_marginStart="44dp"
@@ -118,10 +118,10 @@
         android:layout_marginTop="33dp"
         android:layout_marginBottom="20dp"
         android:scrollbarSize="6sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/probabilityButton"
         app:layout_constraintEnd_toStartOf="@+id/seekBar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button3"
+        app:layout_constraintTop_toBottomOf="@+id/checkCollisionButton"
         app:layout_constraintVertical_bias="0.0" />
 
     <SeekBar
@@ -136,17 +136,17 @@
         app:layout_constraintStart_toEndOf="@+id/recyclerView" />
 
     <Spinner
-        android:id="@+id/dropdownButton"
+        android:id="@+id/selectSat1"
         android:layout_width="267dp"
         android:layout_height="78dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="51dp"
-        app:layout_constraintEnd_toStartOf="@+id/dropdownButton2"
+        app:layout_constraintEnd_toStartOf="@+id/selectSat2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/checkCollisionButton"
         android:layout_width="267dp"
         android:layout_height="78dp"
         android:layout_marginStart="39dp"
@@ -154,12 +154,12 @@
         android:text="@string/check_collision"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/recyclerView"
-        app:layout_constraintEnd_toStartOf="@+id/textView2"
+        app:layout_constraintEnd_toStartOf="@+id/visualitzationText"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dropdownButton" />
+        app:layout_constraintTop_toBottomOf="@+id/selectSat1" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/showAllOrbitsButton"
         android:layout_width="267dp"
         android:layout_height="78dp"
         android:layout_marginStart="199dp"
@@ -167,9 +167,9 @@
         android:layout_marginEnd="236dp"
         android:text="@string/show_all_orbits"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView2"
+        app:layout_constraintBottom_toTopOf="@+id/visualitzationText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/dropdownButton2"
+        app:layout_constraintStart_toEndOf="@+id/selectSat2"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

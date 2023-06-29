@@ -2,7 +2,10 @@ import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
 import java.io.BufferedReader
+import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
+import java.util.Properties
+
 
 class SSHConnection(private val ipAddress: String, private val password: String) {
     private var session: Session? = null
@@ -12,16 +15,22 @@ class SSHConnection(private val ipAddress: String, private val password: String)
     fun connect(): Boolean {
         try {
             val jsch = JSch()
-            session = jsch.getSession("lg1", ipAddress, 22)
-            session?.setPassword(password)
-            session?.setConfig("StrictHostKeyChecking", "no")
-            session?.connect()
+            val session = jsch.getSession("lg", ipAddress, 22)
+            session.setPassword(password)
 
+            val prop = Properties()
+            prop.put("StrictHostKeyChecking", "no")
+            session.setConfig(prop)
+
+            session.connect()
+
+            val channel = session.openChannel("exec") as ChannelExec
+            val baos = ByteArrayOutputStream()
+            channel.outputStream = baos
             return true
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
         return false
     }
 
