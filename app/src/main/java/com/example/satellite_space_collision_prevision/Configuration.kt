@@ -1,5 +1,6 @@
 package com.example.satellite_space_collision_prevision
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.satellite_space_collision_prevision.databinding.ConfigurationBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import utilities.SSHConnection
 
@@ -18,6 +20,7 @@ class Configuration : AppCompatActivity() {
     private lateinit var masterPasswordEditText: EditText
     private lateinit var connectButton: Button
     private lateinit var statusTextView: TextView
+    private lateinit var sshConnection: SSHConnection
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,24 +35,12 @@ class Configuration : AppCompatActivity() {
             val ipAddress = ipAddressEditText.text.toString()
             val masterPassword = masterPasswordEditText.text.toString()
 
+            saveCredentials(ipAddress, masterPassword)
+
             CoroutineScope(Dispatchers.Main).launch {
-                val sshConnection = SSHConnection(ipAddress, masterPassword)
+                sshConnection = SSHConnection(ipAddress, masterPassword)
                 val isConnected = sshConnection.connect()
                 if (isConnected) {
-
-                    binding.powerOffButton.setOnClickListener {
-                        if (sshConnection.isConnected) {
-                            val command = "lg-poweroff" // Command to power off all displays
-                            sshConnection.executeCommand(command)
-                        }
-                    }
-
-                    binding.rebootButton.setOnClickListener {
-                        if (sshConnection.isConnected) {
-                            val command = "lg-reboot" // Command to reboot the LG
-                            sshConnection.executeCommand(command)
-                        }
-                    }
 
                     val disconnectButton: Button = binding.disconnectButton
                     disconnectButton.setOnClickListener {
@@ -68,7 +59,30 @@ class Configuration : AppCompatActivity() {
             }
         }
 
+        binding.powerOffButton.setOnClickListener {
+            if (sshConnection.isConnected) {
+                println("in")
+                val command = "lg-poweroff" // Command to power off all displays
+                CoroutineScope(Dispatchers.Main).launch{
+                    try {
+                        val aaa = async {sshConnection.executeCommandAsync(command)}.await()
+                        println("aaa")
+                    } catch (e: Exception) {
+                        println("Exception occurred: ${e.message}")
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
 
+        binding.rebootButton.setOnClickListener {
+            if (sshConnection.isConnected) {
+                val command = "lg-reboot" // Command to reboot the LG
+                CoroutineScope(Dispatchers.Main).launch {
+                    sshConnection.executeCommand(command)
+                }
+            }
+        }
 
 
         binding.returnMainPage.setOnClickListener {
@@ -76,6 +90,15 @@ class Configuration : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
+    private fun saveCredentials(ipAddress: String, masterPassword: String) {
+        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("ipAddress", ipAddress)
+        editor.putString("masterPassword", masterPassword)
+        editor.apply()
+    }
+
 
     private fun updateStatusTextView(status: String) {
         val statusText = getString(R.string.status_label, status)
