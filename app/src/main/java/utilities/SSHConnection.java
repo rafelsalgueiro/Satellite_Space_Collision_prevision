@@ -30,37 +30,26 @@ public class SSHConnection {
 
     public boolean connect() {
         try {
-            Thread connectionThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        JSch jsch = new JSch();
-                        Session sshSession = jsch.getSession("lg", ipAddress, 22); // Rename the variable here
-                        sshSession.setPassword(password);
+            Thread connectionThread = new Thread(() -> {
+                try {
+                    JSch jsch = new JSch();
+                    Session sshSession = jsch.getSession("lg", ipAddress, 22); // Rename the variable here
+                    sshSession.setPassword(password);
 
-                        Properties prop = new Properties();
-                        prop.put("StrictHostKeyChecking", "no");
-                        sshSession.setConfig(prop);
+                    Properties prop = new Properties();
+                    prop.put("StrictHostKeyChecking", "no");
+                    sshSession.setConfig(prop);
 
-                        sshSession.connect();
+                    sshSession.connect();
 
-                        session = sshSession; // Assign the value to the class-level variable
+                    session = sshSession; // Assign the value to the class-level variable
 
-                        channel = (ChannelExec) session.openChannel("exec");
-                        channel.setCommand("lg-poweroff");
-                        ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
-                        channel.setOutputStream(responseStream);
-                        channel.connect();
-
-                        while (channel.isConnected()) {
-                            Thread.sleep(100);
-                        }
-                        // Log the command output
-                        String commandOutput = responseStream.toString("UTF-8");
-                        Log.d("Command Output", commandOutput);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if (session.isConnected()){
+                        System.out.println("True");
                     }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
             connectionThread.start();
@@ -95,6 +84,9 @@ public class SSHConnection {
                 ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
                 channel.setOutputStream(responseStream);
                 channel.connect();
+                if (channel.isConnected()){
+                    System.out.println("True");
+                }
                 while (channel.isConnected()) {
                     Thread.sleep(100);
                 }
