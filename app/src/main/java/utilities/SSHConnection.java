@@ -1,27 +1,23 @@
 package utilities;
 
-import android.util.Log;
-
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Properties;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class SSHConnection {
     private final String ipAddress;
     private final String password;
     private Session session;
-    private ChannelExec channel;
+
 
     public SSHConnection(String ipAddress, String password) {
         this.ipAddress = ipAddress;
         this.password = password;
+
     }
 
     public boolean isConnected() {
@@ -29,25 +25,24 @@ public class SSHConnection {
     }
 
     public boolean connect() {
+        String user = "lg";
+        int port = 22;
+        JSch jsch = new JSch();
         try {
             Thread connectionThread = new Thread(() -> {
                 try {
-                    JSch jsch = new JSch();
-                    Session sshSession = jsch.getSession("lg", ipAddress, 22); // Rename the variable here
-                    sshSession.setPassword(password);
+                    if (session == null || !session.isConnected()) {
+                        session = jsch.getSession(user, ipAddress, port); // Rename the variable here
+                        session.setPassword(password);
 
-                    Properties prop = new Properties();
-                    prop.put("StrictHostKeyChecking", "no");
-                    sshSession.setConfig(prop);
+                        Properties prop = new Properties();
+                        prop.put("StrictHostKeyChecking", "no");
+                        session.setConfig(prop);
 
-                    sshSession.connect();
-
-                    session = sshSession; // Assign the value to the class-level variable
-
-                    if (session.isConnected()){
-                        System.out.println("True");
+                        session.connect(Integer.MAX_VALUE);
+                    } else {
+                        session.sendKeepAliveMsg();
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -63,56 +58,42 @@ public class SSHConnection {
     }
 
 
-
     public void disconnect() {
-        if (channel != null) {
-            channel.disconnect();
-        }
         if (session != null) {
             session.disconnect();
         }
         session = null;
     }
 
-    public String executeCommand(String command) {
-        StringBuilder output = new StringBuilder();
-
-        try {
-            if (session != null && session.isConnected()) {
-                channel = (ChannelExec) session.openChannel("exec");
-                channel.setCommand(command);
-                ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
-                channel.setOutputStream(responseStream);
-                channel.connect();
-                if (channel.isConnected()){
-                    System.out.println("True");
-                }
-                while (channel.isConnected()) {
-                    Thread.sleep(100);
-                }
-                output.append(responseStream.toString("UTF-8"));
-
-                // Log the command output
-                String commandOutput = responseStream.toString("UTF-8");
-                Log.d("Command Output", commandOutput);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (channel != null) {
-                channel.disconnect();
-            }
+    public String executeCommand(String command) throws JSchException {
+        if (session == null || !session.isConnected()) {
+            return "No command connection";
         }
 
-        return output.toString();
+        ChannelExec channelssh = (ChannelExec) session.openChannel("exec");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        channelssh.setOutputStream(baos);
+
+        channelssh.setCommand(command);
+        channelssh.connect();
+
+        String exitStatus = String.valueOf(channelssh.getExitStatus());
+
+        channelssh.disconnect();
+        System.out.println(baos);
+
+        return exitStatus;
     }
 
+    /*private void powerOff() {
+        try {
+            String sentence = "/home/lg/bin/lg-poweroff > /home/lg/log.txt";
+            showAlertAndExecution(sentence, "shut down");
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "error", Toast.LENGTH_LONG).show();
+        }
+    }*/
 
-    public Future<String> executeCommandAsync(final String command) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Callable<String> task = () -> executeCommand(command);
-        Future<String> future = executor.submit(task);
-        executor.shutdown();
-        return future;
-    }
 }
