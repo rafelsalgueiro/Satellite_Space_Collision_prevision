@@ -23,17 +23,17 @@
         android:layout_width="414dp"
         android:layout_height="109dp"
         android:layout_marginStart="92dp"
+        android:autofillHints="lqgalaxy"
         android:ems="10"
         android:inputType="text"
+        android:labelFor="@+id/MasterPassword"
         android:singleLine="true"
         android:text="@string/master_password"
-        android:labelFor="@+id/MasterPassword"
         android:textSize="30sp"
         app:layout_constraintBottom_toTopOf="@+id/ConnectButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/IPAddress"
-        tools:ignore="TextFields"
-        android:autofillHints="lqgalaxy" />
+        tools:ignore="TextFields" />
 
     <ImageButton
         android:id="@+id/returnMainPage"
@@ -41,8 +41,8 @@
         android:layout_height="78dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:labelFor="@+id/returnMainPage"
         android:contentDescription="@string/app_name"
+        android:labelFor="@+id/returnMainPage"
         android:rotation="90"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -53,6 +53,7 @@
         android:layout_width="414dp"
         android:layout_height="109dp"
         android:layout_marginStart="92dp"
+        android:autofillHints="@string/_127_0_0_1"
         android:ems="10"
         android:hint="@string/_127_0_0_1"
         android:inputType="text"
@@ -61,8 +62,7 @@
         android:textSize="30sp"
         app:layout_constraintBottom_toTopOf="@+id/MasterPassword"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Status"
-        android:autofillHints="@string/_127_0_0_1" />
+        app:layout_constraintTop_toBottomOf="@+id/numberSlaves" />
 
     <TextView
         android:id="@+id/Status"
@@ -72,7 +72,7 @@
         android:text="@string/status"
         android:textSize="30sp"
         app:emojiCompatEnabled="false"
-        app:layout_constraintBottom_toTopOf="@+id/IPAddress"
+        app:layout_constraintBottom_toTopOf="@+id/numberSlaves"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/connectionText" />
 
@@ -100,7 +100,7 @@
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/MasterPassword"/>
+        app:layout_constraintTop_toBottomOf="@+id/MasterPassword" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -154,5 +154,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rebootButton" />
+
+    <EditText
+        android:id="@+id/numberSlaves"
+        android:layout_width="414dp"
+        android:layout_height="109dp"
+        android:layout_marginStart="92dp"
+        android:ems="10"
+        android:inputType="number"
+        android:text="@string/Number_of_slaves"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/IPAddress"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Status"
+        android:autofillHints="3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

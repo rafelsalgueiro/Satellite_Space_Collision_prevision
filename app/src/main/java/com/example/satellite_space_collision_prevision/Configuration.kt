@@ -21,6 +21,7 @@ class Configuration : AppCompatActivity() {
     private lateinit var statusTextView: TextView
     private lateinit var sshConnection: SSHConnection
     private lateinit var disconnectButton: Button
+    private lateinit var cleanKMLDataButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +33,7 @@ class Configuration : AppCompatActivity() {
         connectButton = binding.ConnectButton
         statusTextView = binding.Status
         disconnectButton = binding.disconnectButton
+        cleanKMLDataButton = binding.clearKMLDataButton
 
         // Set click listeners for buttons
         connectButton.setOnClickListener { onConnectButtonClicked() }
@@ -39,16 +41,18 @@ class Configuration : AppCompatActivity() {
         binding.powerOffButton.setOnClickListener { onPowerOffButtonClicked() }
         binding.rebootButton.setOnClickListener { onRebootButtonClicked() }
         binding.returnMainPage.setOnClickListener { onReturnMainPageClicked() }
+        cleanKMLDataButton.setOnClickListener { onCleanKMLDataButtonClicked() }
     }
 
     private fun onConnectButtonClicked() {
         val ipAddress = ipAddressEditText.text.toString()
         val masterPassword = masterPasswordEditText.text.toString()
+        val numSlaves = binding.numberSlaves.text.toString().toInt()
 
-        saveCredentials(ipAddress, masterPassword)
+        saveCredentials(ipAddress, masterPassword, numSlaves)
 
         CoroutineScope(Dispatchers.Main).launch {
-            sshConnection = SSHConnection(ipAddress, masterPassword)
+            sshConnection = SSHConnection(ipAddress, masterPassword, numSlaves)
             val isConnected = sshConnection.connect()
             if (isConnected) {
                 // Connection established successfully
@@ -83,7 +87,7 @@ class Configuration : AppCompatActivity() {
 
     private fun onRebootButtonClicked() {
         if (sshConnection.isConnected) {
-            val command = """lg-reboot""" // Command to reboot the LG
+            val command = "lg-reboot" // Command to reboot the LG
             val scriptPath = "/home/lg/reboot_script.sh"
 
             CoroutineScope(Dispatchers.IO).launch {
@@ -95,7 +99,7 @@ class Configuration : AppCompatActivity() {
                     exitStatus = sshConnection.executeCommand("chmod +x $scriptPath")
                     println("Exit status: $exitStatus")
                     // Execute the script
-                    exitStatus = sshConnection.executeCommand("bash $scriptPath; echo \$?")
+                    exitStatus = sshConnection.executeCommand("bash $scriptPath")
 
                     // Print the exit status
                     println("Exit status: $exitStatus")
@@ -114,11 +118,28 @@ class Configuration : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun saveCredentials(ipAddress: String, masterPassword: String) {
+    private fun onCleanKMLDataButtonClicked() {
+        if (sshConnection.isConnected) {
+            val command = "chmod 777 /var/www/html/kmls.txt; echo '' > /var/www/html/kmls.txt"
+
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    sshConnection.executeCommand(command)
+
+                } catch (e: Exception) {
+                    println("Exception occurred: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun saveCredentials(ipAddress: String, masterPassword: String, numSlaves: Int) {
         val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("ipAddress", ipAddress)
         editor.putString("masterPassword", masterPassword)
+        editor.putInt("numSlaves", numSlaves)
         editor.apply()
     }
 
