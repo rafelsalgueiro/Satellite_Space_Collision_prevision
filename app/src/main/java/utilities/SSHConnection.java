@@ -12,7 +12,7 @@ public class SSHConnection {
     private final String ipAddress;
     private final String password;
     private final int numSlaves;
-    private int logoSlaves;
+    private String logoSlaves;
     private Session session;
 
 
@@ -30,7 +30,7 @@ public class SSHConnection {
     public boolean connect() {
         String user = "lg";
         int port = 22;
-        logoSlaves = numSlaves - 1;
+        logoSlaves = "slave_" + (numSlaves - 1);
         JSch jsch = new JSch();
         try {
             Thread connectionThread = new Thread(() -> {
@@ -62,32 +62,35 @@ public class SSHConnection {
         }
     }
 
-    public void displayLogos(){
-        try {
-            String sentence = "chmod 777 /var/www/html/kml/" + logoSlaves + ".kml; echo '" +
-                    "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
-                    "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
-                    " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
-                    " <Document>\n " +
-                    " <Folder> \n" +
-                    "<name>Logos</name> \n" +
-                    "<ScreenOverlay>\n" +
-                    "<name>Logo</name> \n" +
-                    " <Icon> \n" +
-                    "<href>https://raw.githubusercontent.com/rafelsalgueiro/Satellite_Space_Collision_prevision/master/app/src/main/res/drawable/all_logos.png</href> \n" +
-                    " </Icon> \n" +
-                    " <overlayXY x=\"0\" y=\"1\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
-                    " <screenXY x=\"0.02\" y=\"0.95\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
-                    " <rotationXY x=\"0\" y=\"0\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
-                    " <size x=\"0.6\" y=\"0.8\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
-                    "</ScreenOverlay> \n" +
-                    " </Folder> \n" +
-                    " </Document> \n" +
-                    " </kml>\n' > /var/www/html/kml/" + logoSlaves + ".kml";
-            executeCommand(sentence);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void displayLogos() {
+        Thread thread = new Thread(() -> {
+            try {
+                String sentence = "chmod 777 /var/www/html/kml/" + logoSlaves + ".kml; echo '" +
+                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
+                        "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
+                        " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
+                        " <Document>\n " +
+                        " <Folder> \n" +
+                        "<name>Logos</name> \n" +
+                        "<ScreenOverlay>\n" +
+                        "<name>Logo</name> \n" +
+                        " <Icon> \n" +
+                        "<href>https://raw.githubusercontent.com/rafelsalgueiro/Satellite_Space_Collision_prevision/master/app/src/main/res/drawable/all_logos.png</href> \n" +
+                        " </Icon> \n" +
+                        " <overlayXY x=\"0\" y=\"1\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
+                        " <screenXY x=\"0.02\" y=\"0.95\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
+                        " <rotationXY x=\"0\" y=\"0\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
+                        " <size x=\"0.6\" y=\"0.8\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
+                        "</ScreenOverlay> \n" +
+                        " </Folder> \n" +
+                        " </Document> \n" +
+                        " </kml>\n' > /var/www/html/kml/" + logoSlaves + ".kml";
+                executeCommand(sentence);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
     }
 
 
