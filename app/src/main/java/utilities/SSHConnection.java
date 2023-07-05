@@ -156,7 +156,7 @@ public class SSHConnection {
             Thread thread = new Thread(() -> {
                 try {
                     String command = "/home/" + user + "/bin/lg-poweroff > /home/" + user + "/log.txt;\n " +
-                            "RELAUNCH_CMD=\"\\\n" +
+                            "POWEROFF_CMD=\"\\\n" +
                             "if [ -f /etc/init/lxdm.conf ]; then\n" +
                             "  export SERVICE=lxdm\n" +
                             "elif [ -f /etc/init/lightdm.conf ]; then\n" +
@@ -169,7 +169,7 @@ public class SSHConnection {
                             "else\n" +
                             "  echo " + password + " | sudo -S service \\${SERVICE} restart\n" +
                             "fi\n" +
-                            "\" && sshpass -p " + password + " ssh -x -t lg@lg1 \"$RELAUNCH_CMD\"";
+                            "\" && sshpass -p " + password + " ssh -x -t lg@lg1 \"$POWEROFF_CMD\"";
 
                     executeCommand(command);
                 } catch (Exception e) {
