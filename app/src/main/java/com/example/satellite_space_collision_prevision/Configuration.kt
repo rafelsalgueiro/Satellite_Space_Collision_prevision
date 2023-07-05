@@ -22,6 +22,8 @@ class Configuration : AppCompatActivity() {
     private lateinit var sshConnection: SSHConnection
     private lateinit var disconnectButton: Button
     private lateinit var cleanKMLDataButton: Button
+    private lateinit var showLogos: Button
+    private lateinit var hideLogos: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +36,8 @@ class Configuration : AppCompatActivity() {
         statusTextView = binding.Status
         disconnectButton = binding.disconnectButton
         cleanKMLDataButton = binding.clearKMLDataButton
+        showLogos = binding.showLogo
+        hideLogos = binding.hideLogos
 
         // Set click listeners for buttons
         connectButton.setOnClickListener { onConnectButtonClicked() }
@@ -42,6 +46,14 @@ class Configuration : AppCompatActivity() {
         binding.rebootButton.setOnClickListener { onRebootButtonClicked() }
         binding.returnMainPage.setOnClickListener { onReturnMainPageClicked() }
         cleanKMLDataButton.setOnClickListener { onCleanKMLDataButtonClicked() }
+        showLogos.setOnClickListener { onShowLogosClicked() }
+        hideLogos.setOnClickListener { onHideLogosClicked() }
+    }
+
+    private fun onHideLogosClicked() {
+        if (sshConnection.isConnected) {
+            sshConnection.hideLogos()
+        }
     }
 
     private fun onConnectButtonClicked() {
@@ -65,52 +77,24 @@ class Configuration : AppCompatActivity() {
         }
     }
 
+    private fun onShowLogosClicked() {
+        if (sshConnection.isConnected) {
+            sshConnection.displayLogos()
+        }
+    }
+
     private fun onDisconnectButtonClicked() {
         sshConnection.disconnect()
         updateStatusTextView("Disconnected")
     }
 
     private fun onPowerOffButtonClicked() {
-        if (sshConnection.isConnected) {
-            val command = "/home/lg/bin/lg-reboot > /home/lg/log.txt"
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    sshConnection.executeCommand(command)
-                } catch (e: Exception) {
-                    println("Exception occurred: ${e.message}")
-                    e.printStackTrace()
-                    updateStatusTextView("Disconnected")
-                }
-            }
-        }
+        sshConnection.poweroffButton()
     }
 
     private fun onRebootButtonClicked() {
-        if (sshConnection.isConnected) {
-            val command = "lg-reboot" // Command to reboot the LG
-            val scriptPath = "/home/lg/reboot_script.sh"
-
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    // Write command to script file
-                    var exitStatus = sshConnection.executeCommand("echo \"$command\" > $scriptPath")
-                    println("Exit status: $exitStatus")
-                    // Set execute permissions for the script
-                    exitStatus = sshConnection.executeCommand("chmod +x $scriptPath")
-                    println("Exit status: $exitStatus")
-                    // Execute the script
-                    exitStatus = sshConnection.executeCommand("bash $scriptPath")
-
-                    // Print the exit status
-                    println("Exit status: $exitStatus")
-                } catch (e: Exception) {
-                    println("Exception occurred: ${e.message}")
-                    e.printStackTrace()
-                }
-            }
-        }
+        sshConnection.rebootButton()
     }
-
 
 
     private fun onReturnMainPageClicked() {

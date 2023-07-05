@@ -113,12 +113,11 @@
         android:id="@+id/rebootButton"
         android:layout_width="228dp"
         android:layout_height="93dp"
+        android:layout_marginEnd="254dp"
         android:text="@string/reboot"
         android:textSize="25sp"
         app:layout_constraintBottom_toTopOf="@+id/powerOffButton"
-        app:layout_constraintEnd_toEndOf="@+id/powerOffButton"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/powerOffButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clearKMLDataButton" />
 
 
@@ -126,22 +125,48 @@
         android:id="@+id/lgText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="173dp"
         android:text="@string/liquid_galaxy"
         android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="@+id/connectionText"
-        app:layout_constraintEnd_toEndOf="@+id/clearKMLDataButton"
-        app:layout_constraintStart_toStartOf="@+id/clearKMLDataButton"
-        app:layout_constraintTop_toTopOf="@+id/connectionText" />
+        app:layout_constraintBottom_toTopOf="@+id/showLogo"
+        app:layout_constraintEnd_toStartOf="@+id/returnMainPage"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/clearKMLDataButton"
         android:layout_width="266dp"
         android:layout_height="87dp"
+        android:layout_marginEnd="243dp"
         android:text="@string/clear_kml_data"
         android:textSize="25sp"
         app:layout_constraintBottom_toTopOf="@+id/rebootButton"
-        app:layout_constraintEnd_toEndOf="@+id/rebootButton"
-        app:layout_constraintStart_toStartOf="@+id/rebootButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/showLogo" />
+
+    <Button
+        android:id="@+id/showLogo"
+        android:layout_width="266dp"
+        android:layout_height="87dp"
+        android:layout_marginStart="131dp"
+        android:layout_marginEnd="25dp"
+        android:text="@string/display_logos"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@+id/clearKMLDataButton"
+        app:layout_constraintEnd_toStartOf="@+id/hideLogos"
+        app:layout_constraintStart_toEndOf="@+id/numberSlaves"
+        app:layout_constraintTop_toBottomOf="@+id/lgText" />
+
+    <Button
+        android:id="@+id/hideLogos"
+        android:layout_width="266dp"
+        android:layout_height="87dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="67dp"
+        android:layout_marginEnd="86dp"
+        android:text="@string/hide_logos"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/showLogo"
         app:layout_constraintTop_toBottomOf="@+id/lgText" />
 
     <Button
@@ -160,13 +185,13 @@
         android:layout_width="414dp"
         android:layout_height="109dp"
         android:layout_marginStart="92dp"
+        android:autofillHints="3"
         android:ems="10"
         android:inputType="number"
         android:text="@string/Number_of_slaves"
         android:textSize="30sp"
         app:layout_constraintBottom_toTopOf="@+id/IPAddress"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Status"
-        android:autofillHints="3" />
+        app:layout_constraintTop_toBottomOf="@+id/Status" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

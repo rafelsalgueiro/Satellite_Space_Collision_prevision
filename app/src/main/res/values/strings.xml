@@ -25,4 +25,6 @@
     <string name="configuration_label">Configuration</string>
     <string name="title_activity_configurate">Configure</string>
     <string name="Number_of_slaves">Number of slaves:</string>
+    <string name="display_logos">Display logos</string>
+    <string name="hide_logos">Hide logos</string>
 </resources>

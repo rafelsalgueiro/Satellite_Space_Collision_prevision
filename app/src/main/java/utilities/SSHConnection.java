@@ -14,6 +14,7 @@ public class SSHConnection {
     private final int numSlaves;
     private String logoSlaves;
     private Session session;
+    private String user;
 
 
     public SSHConnection(String ipAddress, String password, int numSlaves) {
@@ -27,10 +28,19 @@ public class SSHConnection {
         return session != null && session.isConnected();
     }
 
+    public int leftScreen() {
+
+        if (numSlaves == 1) {
+            return 1;
+        }
+
+        return (numSlaves / 2) + 2;
+    }
+
     public boolean connect() {
-        String user = "lg";
+        user = "lg";
         int port = 22;
-        logoSlaves = "slave_" + (numSlaves - 1);
+        logoSlaves = "slave_" + leftScreen();
         JSch jsch = new JSch();
         try {
             Thread connectionThread = new Thread(() -> {
@@ -93,6 +103,82 @@ public class SSHConnection {
         thread.start();
     }
 
+
+    public void hideLogos() {
+        Thread thread = new Thread(() -> {
+            try {
+                String sentence = "chmod 777 /var/www/html/kml/" + logoSlaves + ".kml; echo '" +
+                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
+                        "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
+                        " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
+                        " <Document \n " +
+                        " </Document> \n" +
+                        " </kml>\n' > /var/www/html/kml/" + logoSlaves + ".kml";
+                executeCommand(sentence);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    public void rebootButton() {
+        if (isConnected()) {
+            Thread thread = new Thread(() -> {
+                try {
+                    String command = "/home/" + user + "/bin/lg-relaunch > /home/" + user + "/log.txt;\n " +
+                            "RELAUNCH_CMD=\"\\\n" +
+                            "if [ -f /etc/init/lxdm.conf ]; then\n" +
+                            "  export SERVICE=lxdm\n" +
+                            "elif [ -f /etc/init/lightdm.conf ]; then\n" +
+                            "  export SERVICE=lightdm\n" +
+                            "else\n" +
+                            "  exit 1\n" +
+                            "fi\n" +
+                            "if  [[ \\$(service \\$SERVICE status) =~ 'stop' ]]; then\n" +
+                            "  echo " + password + " | sudo -S service \\${SERVICE} start\n" +
+                            "else\n" +
+                            "  echo " + password + " | sudo -S service \\${SERVICE} restart\n" +
+                            "fi\n" +
+                            "\" && sshpass -p " + password + " ssh -x -t lg@lg1 \"$RELAUNCH_CMD\"";
+
+                    executeCommand(command);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            thread.start();
+        }
+    }
+
+    public void poweroffButton() {
+        if (isConnected()) {
+            Thread thread = new Thread(() -> {
+                try {
+                    String command = "/home/" + user + "/bin/lg-poweroff > /home/" + user + "/log.txt;\n " +
+                            "RELAUNCH_CMD=\"\\\n" +
+                            "if [ -f /etc/init/lxdm.conf ]; then\n" +
+                            "  export SERVICE=lxdm\n" +
+                            "elif [ -f /etc/init/lightdm.conf ]; then\n" +
+                            "  export SERVICE=lightdm\n" +
+                            "else\n" +
+                            "  exit 1\n" +
+                            "fi\n" +
+                            "if  [[ \\$(service \\$SERVICE status) =~ 'stop' ]]; then\n" +
+                            "  echo " + password + " | sudo -S service \\${SERVICE} start\n" +
+                            "else\n" +
+                            "  echo " + password + " | sudo -S service \\${SERVICE} restart\n" +
+                            "fi\n" +
+                            "\" && sshpass -p " + password + " ssh -x -t lg@lg1 \"$RELAUNCH_CMD\"";
+
+                    executeCommand(command);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            thread.start();
+        }
+    }
 
     public void disconnect() {
         if (session != null) {
