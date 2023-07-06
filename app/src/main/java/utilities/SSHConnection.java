@@ -37,6 +37,15 @@ public class SSHConnection {
         return (numSlaves / 2) + 2;
     }
 
+    public int rightScreen() {
+
+        if (numSlaves == 1) {
+            return 1;
+        }
+
+        return (numSlaves / 2) + 1;
+    }
+
     public boolean connect() {
         user = "lg";
         int port = 22;
@@ -90,12 +99,34 @@ public class SSHConnection {
                         " <overlayXY x=\"0\" y=\"1\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
                         " <screenXY x=\"0.02\" y=\"0.95\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
                         " <rotationXY x=\"0\" y=\"0\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
-                        " <size x=\"0.6\" y=\"0.8\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
+                        " <size x=\"0.6\" y=\"0.65\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
                         "</ScreenOverlay> \n" +
                         " </Folder> \n" +
                         " </Document> \n" +
                         " </kml>\n' > /var/www/html/kml/" + logoSlaves + ".kml";
                 executeCommand(sentence);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    public void cleanKml() {
+        Thread thread = new Thread(() -> {
+            try {
+                for (int i = 0; i <= numSlaves; i++) {
+                    String slaves ="slave_" + i;
+                    System.out.println(i);
+                    String sentence = "chmod 777 /var/www/html/kml/" + slaves + ".kml; echo '" +
+                            "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
+                            "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
+                            " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
+                            " <Document id=\"" + slaves + "\">\n " +
+                            " </Document> \n" +
+                            " </kml>\n' > /var/www/html/kml/" + slaves + ".kml";
+                    executeCommand(sentence);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -111,7 +142,7 @@ public class SSHConnection {
                         "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
                         "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
                         " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
-                        " <Document \n " +
+                        " <Document id=\"" + logoSlaves + "\">\n " +
                         " </Document> \n" +
                         " </kml>\n' > /var/www/html/kml/" + logoSlaves + ".kml";
                 executeCommand(sentence);
@@ -126,22 +157,9 @@ public class SSHConnection {
         if (isConnected()) {
             Thread thread = new Thread(() -> {
                 try {
-                    String command = "/home/" + user + "/bin/lg-relaunch > /home/" + user + "/log.txt;\n " +
-                            "RELAUNCH_CMD=\"\\\n" +
-                            "if [ -f /etc/init/lxdm.conf ]; then\n" +
-                            "  export SERVICE=lxdm\n" +
-                            "elif [ -f /etc/init/lightdm.conf ]; then\n" +
-                            "  export SERVICE=lightdm\n" +
-                            "else\n" +
-                            "  exit 1\n" +
-                            "fi\n" +
-                            "if  [[ \\$(service \\$SERVICE status) =~ 'stop' ]]; then\n" +
-                            "  echo " + password + " | sudo -S service \\${SERVICE} start\n" +
-                            "else\n" +
-                            "  echo " + password + " | sudo -S service \\${SERVICE} restart\n" +
-                            "fi\n" +
-                            "\" && sshpass -p " + password + " ssh -x -t lg@lg1 \"$RELAUNCH_CMD\"";
-
+                    String command = "/home/" + user + "/bin/lg-reboot > /home/" + user + "/log.txt;\n" +
+                            "REBOOT_CMD=\"sudo lg-reboot\"\n" +
+                            "sshpass -p " + password + " ssh -x -t lg@lg1 \"$REBOOT_CMD\"";
                     executeCommand(command);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -155,23 +173,11 @@ public class SSHConnection {
         if (isConnected()) {
             Thread thread = new Thread(() -> {
                 try {
-                    String command = "/home/" + user + "/bin/lg-poweroff > /home/" + user + "/log.txt;\n " +
-                            "POWEROFF_CMD=\"\\\n" +
-                            "if [ -f /etc/init/lxdm.conf ]; then\n" +
-                            "  export SERVICE=lxdm\n" +
-                            "elif [ -f /etc/init/lightdm.conf ]; then\n" +
-                            "  export SERVICE=lightdm\n" +
-                            "else\n" +
-                            "  exit 1\n" +
-                            "fi\n" +
-                            "if  [[ \\$(service \\$SERVICE status) =~ 'stop' ]]; then\n" +
-                            "  echo " + password + " | sudo -S service \\${SERVICE} start\n" +
-                            "else\n" +
-                            "  echo " + password + " | sudo -S service \\${SERVICE} restart\n" +
-                            "fi\n" +
-                            "\" && sshpass -p " + password + " ssh -x -t lg@lg1 \"$POWEROFF_CMD\"";
+                    for (int i = 0; i <= numSlaves; i++) {
+                        String command ="sshpass -p "+password+" ssh -t lg"+i+" echo "+password+" | sudo -S poweroff";
 
-                    executeCommand(command);
+                        executeCommand(command);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -187,9 +193,9 @@ public class SSHConnection {
         session = null;
     }
 
-    public String executeCommand(String command) throws JSchException {
+    public void executeCommand(String command) throws JSchException {
         if (session == null || !session.isConnected()) {
-            return "No command connection";
+            return;
         }
 
         ChannelExec channelssh = (ChannelExec) session.openChannel("exec");
@@ -201,21 +207,8 @@ public class SSHConnection {
         channelssh.setCommand(command);
         channelssh.connect();
 
-        String exitStatus = String.valueOf(channelssh.getExitStatus());
-
         channelssh.disconnect();
-        System.out.println(baos);
 
-        return exitStatus;
     }
-
-    /*private void powerOff() {
-        try {
-            String sentence = "/home/lg/bin/lg-poweroff > /home/lg/log.txt";
-            showAlertAndExecution(sentence, "shut down");
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), "error", Toast.LENGTH_LONG).show();
-        }
-    }*/
 
 }
