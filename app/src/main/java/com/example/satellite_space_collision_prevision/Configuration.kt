@@ -104,17 +104,7 @@ class Configuration : AppCompatActivity() {
 
     private fun onCleanKMLDataButtonClicked() {
         if (sshConnection.isConnected) {
-            val command = "chmod 777 /var/www/html/kmls.txt; echo '' > /var/www/html/kmls.txt"
-
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    sshConnection.executeCommand(command)
-
-                } catch (e: Exception) {
-                    println("Exception occurred: ${e.message}")
-                    e.printStackTrace()
-                }
-            }
+            sshConnection.cleanKml()
         }
     }
 
