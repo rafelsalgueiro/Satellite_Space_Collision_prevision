@@ -13,7 +13,7 @@ public class SSHConnection {
     private final String password;
     private final int numSlaves;
     private String logoSlaves;
-    private Session session;
+    private static Session session;
     private String user;
 
 
@@ -24,7 +24,7 @@ public class SSHConnection {
 
     }
 
-    public boolean isConnected() {
+    public static boolean isConnected() {
         return session != null && session.isConnected();
     }
 
@@ -84,7 +84,7 @@ public class SSHConnection {
     public void displayLogos() {
         Thread thread = new Thread(() -> {
             try {
-                String sentence = "chmod 777 /var/www/html/kml/" + logoSlaves + ".kml; echo '" +
+                String command = "chmod 777 /var/www/html/kml/" + logoSlaves + ".kml; echo '" +
                         "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
                         "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
                         " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
@@ -104,7 +104,7 @@ public class SSHConnection {
                         " </Folder> \n" +
                         " </Document> \n" +
                         " </kml>\n' > /var/www/html/kml/" + logoSlaves + ".kml";
-                executeCommand(sentence);
+                executeCommand(command);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -115,17 +115,16 @@ public class SSHConnection {
     public void cleanKml() {
         Thread thread = new Thread(() -> {
             try {
-                for (int i = 0; i <= numSlaves; i++) {
-                    String slaves ="slave_" + i;
-                    System.out.println(i);
-                    String sentence = "chmod 777 /var/www/html/kml/" + slaves + ".kml; echo '" +
+                for (int i = 1; i <= numSlaves; i++) {
+                    String slaves = "slave_" + i;
+                    String command = "chmod 777 /var/www/html/kml/" + slaves + ".kml; echo '" +
                             "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
                             "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
                             " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
                             " <Document id=\"" + slaves + "\">\n " +
                             " </Document> \n" +
                             " </kml>\n' > /var/www/html/kml/" + slaves + ".kml";
-                    executeCommand(sentence);
+                    executeCommand(command);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -138,14 +137,14 @@ public class SSHConnection {
     public void hideLogos() {
         Thread thread = new Thread(() -> {
             try {
-                String sentence = "chmod 777 /var/www/html/kml/" + logoSlaves + ".kml; echo '" +
+                String command = "chmod 777 /var/www/html/kml/" + logoSlaves + ".kml; echo '" +
                         "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
                         "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
                         " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
                         " <Document id=\"" + logoSlaves + "\">\n " +
                         " </Document> \n" +
                         " </kml>\n' > /var/www/html/kml/" + logoSlaves + ".kml";
-                executeCommand(sentence);
+                executeCommand(command);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -154,36 +153,41 @@ public class SSHConnection {
     }
 
     public void rebootButton() {
-        if (isConnected()) {
-            Thread thread = new Thread(() -> {
-                try {
-                    String command = "/home/" + user + "/bin/lg-reboot > /home/" + user + "/log.txt;\n" +
-                            "REBOOT_CMD=\"sudo lg-reboot\"\n" +
-                            "sshpass -p " + password + " ssh -x -t lg@lg1 \"$REBOOT_CMD\"";
-                    executeCommand(command);
-                } catch (Exception e) {
-                    e.printStackTrace();
+        final String[] command = new String[0];
+        Thread thread = new Thread(() -> {
+            try {
+                for (int i = 1; i <= numSlaves; i++) {
+                    if( i == numSlaves ){
+                        command[0] = "sshpass -p " + password + " ssh -t lg" + i + " \"echo " + password + " | sudo -S reboot\"";
+                    }else{
+                        command[0] += "; sshpass -p " + password + " ssh -t lg" + i + " \"echo " + password + " | sudo -S reboot\"";
+                    }
+                    executeCommand(command[0]);
                 }
-            });
-            thread.start();
-        }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
     }
 
     public void poweroffButton() {
-        if (isConnected()) {
-            Thread thread = new Thread(() -> {
-                try {
-                    for (int i = 0; i <= numSlaves; i++) {
-                        String command ="sshpass -p "+password+" ssh -t lg"+i+" echo "+password+" | sudo -S poweroff";
-
-                        executeCommand(command);
+        final String[] command = new String[0];
+        Thread thread = new Thread(() -> {
+            try {
+                for (int i = 1; i <= numSlaves; i++) {
+                    if( i == numSlaves ){
+                        command[0] = "sshpass -p " + password + " ssh -t lg" + i + " \"echo " + password + " | sudo -S poweroff\"";
+                    }else{
+                        command[0] += "; sshpass -p " + password + " ssh -t lg" + i + " \"echo " + password + " | sudo -S poweroff\"";
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    executeCommand(command[0]);
                 }
-            });
-            thread.start();
-        }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
     }
 
     public void disconnect() {
@@ -193,7 +197,7 @@ public class SSHConnection {
         session = null;
     }
 
-    public void executeCommand(String command) throws JSchException {
+    public static void executeCommand(String command) throws JSchException {
         if (session == null || !session.isConnected()) {
             return;
         }
@@ -211,4 +215,17 @@ public class SSHConnection {
 
     }
 
+    public static void testingPrintingSats() {
+        Thread thread = new Thread(() -> {
+            try {
+                String command = "chmod 777 /var/www/html/kml/master.kml; echo '" +
+                        printingOrbitsOf2Sat.createKMLFile() +
+                        "' > /var/www/html/kml/master.kml";
+                executeCommand(command);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
 }

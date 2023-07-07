@@ -1,5 +1,9 @@
 package utilities
 
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
+
 class coordsOfSatellites {
     fun calculateOrbit(linea1TLE: String, linea2TLE: String): Orbit {
         val satelliteId = linea1TLE.substring(0, 6)
@@ -11,7 +15,7 @@ class coordsOfSatellites {
         val argumentOfPerihelion = linea1TLE.substring(50, 60).toDouble()
         val meanAnomaly = linea1TLE.substring(60, 70).toDouble()
 
-        val orbit = Orbit(
+        return Orbit(
             satelliteId = satelliteId,
             epoch = epoch,
             meanMotion = meanMotion,
@@ -20,10 +24,15 @@ class coordsOfSatellites {
             rightAscensionOfAscendingNode = rightAscensionOfAscendingNode,
             argumentOfPerihelion = argumentOfPerihelion,
             meanAnomaly = meanAnomaly,
-            coordinates = calculateCoordinates(meanMotion, eccentricity, inclination, rightAscensionOfAscendingNode, argumentOfPerihelion, meanAnomaly)
+            coordinates = calculateCoordinates(
+                meanMotion,
+                eccentricity,
+                inclination,
+                rightAscensionOfAscendingNode,
+                argumentOfPerihelion,
+                meanAnomaly
+            )
         )
-
-        return orbit
     }
 
     fun calculateCoordinates(meanMotion: Double, eccentricity: Double, inclination: Double, rightAscensionOfAscendingNode: Double, argumentOfPerihelion: Double, meanAnomaly: Double): List<String> {
@@ -46,30 +55,28 @@ class coordsOfSatellites {
     fun calculatePosition(meanMotion: Double, eccentricity: Double, inclination: Double, rightAscensionOfAscendingNode: Double, argumentOfPerihelion: Double, meanAnomaly: Double, time: Double): Position {
         /*REVISAR*/
         // Calculate the true anomaly.
-        val trueAnomaly = meanAnomaly + eccentricity * Math.sin(meanAnomaly)
+        val trueAnomaly = meanAnomaly + eccentricity * sin(meanAnomaly)
 
         // Calculate the radius vector.
-        val radiusVector = meanMotion * Math.sqrt(1 - eccentricity * eccentricity) * Math.sin(trueAnomaly)
+        val radiusVector = meanMotion * sqrt(1 - eccentricity * eccentricity) * sin(trueAnomaly)
 
         // Calculate the x-coordinate.
-        val x = radiusVector * Math.cos(trueAnomaly) * Math.cos(rightAscensionOfAscendingNode)
+        val x = radiusVector * cos(trueAnomaly) * cos(rightAscensionOfAscendingNode)
 
         // Calculate the y-coordinate.
-        val y = radiusVector * Math.cos(trueAnomaly) * Math.sin(rightAscensionOfAscendingNode)
+        val y = radiusVector * cos(trueAnomaly) * sin(rightAscensionOfAscendingNode)
 
         // Calculate the z-coordinate.
-        val z = radiusVector * Math.sin(trueAnomaly) * Math.cos(inclination)
+        val z = radiusVector * sin(trueAnomaly) * cos(inclination)
 
         // Return the position.
-        val position = Position(x, y, z)
 
-        return position
+        return Position(x, y, z)
     }
 
     fun Position.toCoordinates(): String {
-        val coordinates = listOf(x, y, z).joinToString(",")
 
-        return coordinates
+        return listOf(x, y, z).joinToString(",")
     }
     data class Orbit(
         val satelliteId: String,
