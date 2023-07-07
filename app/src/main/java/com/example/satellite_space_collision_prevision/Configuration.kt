@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.satellite_space_collision_prevision
 
 import android.content.Context
@@ -19,15 +21,19 @@ class Configuration : AppCompatActivity() {
     private lateinit var masterPasswordEditText: EditText
     private lateinit var connectButton: Button
     private lateinit var statusTextView: TextView
-    private lateinit var sshConnection: SSHConnection
+    lateinit var sshConnection: SSHConnection
     private lateinit var disconnectButton: Button
     private lateinit var cleanKMLDataButton: Button
     private lateinit var showLogos: Button
     private lateinit var hideLogos: Button
+    private lateinit var numSlaves: EditText
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        val sharedPreferencies = getSharedPreferences("MyPrefs", MODE_MULTI_PROCESS)
+        val editor = sharedPreferencies.edit()
 
         // Initialize views
         ipAddressEditText = binding.IPAddress
@@ -38,9 +44,21 @@ class Configuration : AppCompatActivity() {
         cleanKMLDataButton = binding.clearKMLDataButton
         showLogos = binding.showLogo
         hideLogos = binding.hideLogos
+        numSlaves = binding.numberSlaves
+
+        if (sharedPreferencies.contains("ipAddress")) {
+            ipAddressEditText.setText(sharedPreferencies.getString("ipAddress", ""))
+            masterPasswordEditText.setText(sharedPreferencies.getString("masterPassword", ""))
+            numSlaves.setText(sharedPreferencies.getInt("numSlaves", 0).toString())
+            statusTextView.text = sharedPreferencies.getString("status", "")
+        } else {
+            ipAddressEditText.text = null
+            masterPasswordEditText.text = null
+            numSlaves.text = null
+            statusTextView.text = null
+        }
 
         // Set click listeners for buttons
-        connectButton.setOnClickListener { onConnectButtonClicked() }
         disconnectButton.setOnClickListener { onDisconnectButtonClicked() }
         binding.powerOffButton.setOnClickListener { onPowerOffButtonClicked() }
         binding.rebootButton.setOnClickListener { onRebootButtonClicked() }
@@ -48,37 +66,56 @@ class Configuration : AppCompatActivity() {
         cleanKMLDataButton.setOnClickListener { onCleanKMLDataButtonClicked() }
         showLogos.setOnClickListener { onShowLogosClicked() }
         hideLogos.setOnClickListener { onHideLogosClicked() }
+
+        connectButton.setOnClickListener {
+
+            val ipAddress = ipAddressEditText.text.toString()
+            val masterPassword = masterPasswordEditText.text.toString()
+            val numSlaves = binding.numberSlaves.text.toString().toInt()
+            saveCredentials(ipAddress, masterPassword, numSlaves)
+
+            CoroutineScope(Dispatchers.Main).launch {
+                sshConnection = SSHConnection(ipAddress, masterPassword, numSlaves)
+                val isConnected = sshConnection.connect()
+                if (isConnected) {
+                    // Connection established successfully
+                    // Perform any operations you need on the SSH connection
+                    updateStatusTextView("Connected")
+                    editor.apply{
+                        putString("ipAddress", ipAddress)
+                        putString("masterPassword", masterPassword)
+                        putInt("numSlaves", numSlaves)
+                        putString("status", statusTextView.text.toString())
+                        apply()
+                    }
+                } else {
+                    // Connection failed
+                    updateStatusTextView("Disconnected")
+                    editor.apply {
+                        putString("ipAddress", ipAddress)
+                        putString("masterPassword", masterPassword)
+                        putInt("numSlaves", numSlaves)
+                        putString("status", statusTextView.text.toString())
+                        apply()
+                    }
+                }
+            }
+
+        }
     }
 
     private fun onHideLogosClicked() {
-        if (sshConnection.isConnected) {
+        if (SSHConnection.isConnected()) {
             sshConnection.hideLogos()
         }
     }
 
     private fun onConnectButtonClicked() {
-        val ipAddress = ipAddressEditText.text.toString()
-        val masterPassword = masterPasswordEditText.text.toString()
-        val numSlaves = binding.numberSlaves.text.toString().toInt()
 
-        saveCredentials(ipAddress, masterPassword, numSlaves)
-
-        CoroutineScope(Dispatchers.Main).launch {
-            sshConnection = SSHConnection(ipAddress, masterPassword, numSlaves)
-            val isConnected = sshConnection.connect()
-            if (isConnected) {
-                // Connection established successfully
-                // Perform any operations you need on the SSH connection
-                updateStatusTextView("Connected")
-            } else {
-                // Connection failed
-                updateStatusTextView("Disconnected")
-            }
-        }
     }
 
     private fun onShowLogosClicked() {
-        if (sshConnection.isConnected) {
+        if (SSHConnection.isConnected()) {
             sshConnection.displayLogos()
         }
     }
@@ -103,7 +140,7 @@ class Configuration : AppCompatActivity() {
     }
 
     private fun onCleanKMLDataButtonClicked() {
-        if (sshConnection.isConnected) {
+        if (SSHConnection.isConnected()) {
             sshConnection.cleanKml()
         }
     }
@@ -122,4 +159,5 @@ class Configuration : AppCompatActivity() {
         val statusText = getString(R.string.status_label, status)
         statusTextView.text = statusText
     }
+
 }
