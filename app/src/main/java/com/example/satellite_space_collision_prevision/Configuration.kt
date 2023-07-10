@@ -110,9 +110,6 @@ class Configuration : AppCompatActivity() {
         }
     }
 
-    private fun onConnectButtonClicked() {
-
-    }
 
     private fun onShowLogosClicked() {
         if (SSHConnection.isConnected()) {
@@ -160,4 +157,9 @@ class Configuration : AppCompatActivity() {
         statusTextView.text = statusText
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        sshConnection.disconnect()
+        updateStatusTextView("Disconnected")
+    }
 }
