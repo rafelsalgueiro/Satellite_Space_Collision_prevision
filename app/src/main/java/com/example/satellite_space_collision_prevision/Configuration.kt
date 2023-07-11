@@ -4,6 +4,7 @@ package com.example.satellite_space_collision_prevision
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -27,13 +28,14 @@ class Configuration : AppCompatActivity() {
     private lateinit var showLogos: Button
     private lateinit var hideLogos: Button
     private lateinit var numSlaves: EditText
+    private lateinit var editor: SharedPreferences.Editor
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         val sharedPreferencies = getSharedPreferences("MyPrefs", MODE_MULTI_PROCESS)
-        val editor = sharedPreferencies.edit()
+        editor = sharedPreferencies.edit()
 
         // Initialize views
         ipAddressEditText = binding.IPAddress
@@ -66,42 +68,43 @@ class Configuration : AppCompatActivity() {
         cleanKMLDataButton.setOnClickListener { onCleanKMLDataButtonClicked() }
         showLogos.setOnClickListener { onShowLogosClicked() }
         hideLogos.setOnClickListener { onHideLogosClicked() }
+        connectButton.setOnClickListener { onConnectButtonClicked() }
 
-        connectButton.setOnClickListener {
 
-            val ipAddress = ipAddressEditText.text.toString()
-            val masterPassword = masterPasswordEditText.text.toString()
-            val numSlaves = binding.numberSlaves.text.toString().toInt()
-            saveCredentials(ipAddress, masterPassword, numSlaves)
+    }
+    private fun onConnectButtonClicked() {
+        val ipAddress = ipAddressEditText.text.toString()
+        val masterPassword = masterPasswordEditText.text.toString()
+        val numSlaves = binding.numberSlaves.text.toString().toInt()
+        saveCredentials(ipAddress, masterPassword, numSlaves)
 
-            CoroutineScope(Dispatchers.Main).launch {
-                sshConnection = SSHConnection(ipAddress, masterPassword, numSlaves)
-                val isConnected = sshConnection.connect()
-                if (isConnected) {
-                    // Connection established successfully
-                    // Perform any operations you need on the SSH connection
-                    updateStatusTextView("Connected")
-                    editor.apply{
-                        putString("ipAddress", ipAddress)
-                        putString("masterPassword", masterPassword)
-                        putInt("numSlaves", numSlaves)
-                        putString("status", statusTextView.text.toString())
-                        apply()
-                    }
-                } else {
-                    // Connection failed
-                    updateStatusTextView("Disconnected")
-                    editor.apply {
-                        putString("ipAddress", ipAddress)
-                        putString("masterPassword", masterPassword)
-                        putInt("numSlaves", numSlaves)
-                        putString("status", statusTextView.text.toString())
-                        apply()
-                    }
+        CoroutineScope(Dispatchers.Main).launch {
+            sshConnection = SSHConnection(ipAddress, masterPassword, numSlaves)
+            val isConnected = sshConnection.connect()
+            if (isConnected) {
+                // Connection established successfully
+                // Perform any operations you need on the SSH connection
+                updateStatusTextView("Connected")
+                editor.apply{
+                    putString("ipAddress", ipAddress)
+                    putString("masterPassword", masterPassword)
+                    putInt("numSlaves", numSlaves)
+                    putString("status", statusTextView.text.toString())
+                    apply()
+                }
+            } else {
+                // Connection failed
+                updateStatusTextView("Disconnected")
+                editor.apply {
+                    putString("ipAddress", ipAddress)
+                    putString("masterPassword", masterPassword)
+                    putInt("numSlaves", numSlaves)
+                    putString("status", statusTextView.text.toString())
+                    apply()
                 }
             }
-
         }
+
     }
 
     private fun onHideLogosClicked() {
@@ -158,8 +161,15 @@ class Configuration : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        sshConnection.disconnect()
         updateStatusTextView("Disconnected")
+        sshConnection.disconnect()
+        editor.apply{
+            putString("ipAddress", ipAddressEditText.text.toString())
+            putString("masterPassword", masterPasswordEditText.text.toString())
+            putInt("numSlaves", numSlaves.text.toString().toInt())
+            putString("status", statusTextView.text.toString())
+            apply()
+        }
+        super.onDestroy()
     }
 }

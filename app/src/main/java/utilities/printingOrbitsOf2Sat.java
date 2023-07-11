@@ -8,6 +8,7 @@ public class printingOrbitsOf2Sat {
                 "    <Document>\n" +
                 "        <name>Satellite Trajectories</name>\n" +
                 "        \n" +
+                " <open>1</open>\n" +
                 "        <Style id=\"satellite1\">\n" +
                 "            <LineStyle>\n" +
                 "                <color>ff0000ff</color>\n" +

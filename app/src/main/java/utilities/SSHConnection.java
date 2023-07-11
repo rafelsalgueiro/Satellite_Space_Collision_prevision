@@ -13,6 +13,8 @@ public class SSHConnection {
     private final String password;
     private final int numSlaves;
     private String logoSlaves;
+
+    private static String infoSlave;
     private static Session session;
     private String user;
 
@@ -50,6 +52,7 @@ public class SSHConnection {
         user = "lg";
         int port = 22;
         logoSlaves = "slave_" + leftScreen();
+        infoSlave = "slave_" + rightScreen();
         JSch jsch = new JSch();
         try {
             Thread connectionThread = new Thread(() -> {
@@ -125,6 +128,9 @@ public class SSHConnection {
                             " </Document> \n" +
                             " </kml>\n' > /var/www/html/kml/" + slaves + ".kml";
                     executeCommand(command);
+
+                    String command2 = "echo \"exittour=true\" > /tmp/query.txt && > /var/www/html/kmls.txt";
+                    executeCommand(command2);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -153,10 +159,10 @@ public class SSHConnection {
     }
 
     public void rebootButton() {
-        final String[] command = new String[0];
+        final String[] command = {null};
         Thread thread = new Thread(() -> {
             try {
-                for (int i = 1; i <= numSlaves; i++) {
+                for (int i = numSlaves; i >= 1; i--){
                     if( i == numSlaves ){
                         command[0] = "sshpass -p " + password + " ssh -t lg" + i + " \"echo " + password + " | sudo -S reboot\"";
                     }else{
@@ -172,10 +178,10 @@ public class SSHConnection {
     }
 
     public void poweroffButton() {
-        final String[] command = new String[0];
+        final String[] command = {null};
         Thread thread = new Thread(() -> {
             try {
-                for (int i = 1; i <= numSlaves; i++) {
+                for (int i = numSlaves; i >= 1; i--){
                     if( i == numSlaves ){
                         command[0] = "sshpass -p " + password + " ssh -t lg" + i + " \"echo " + password + " | sudo -S poweroff\"";
                     }else{
@@ -218,10 +224,139 @@ public class SSHConnection {
     public static void testingPrintingSats() {
         Thread thread = new Thread(() -> {
             try {
-                String command = "chmod 777 /var/www/html/kml/master.kml; echo '" +
+                String command = "chmod 777 /var/www/html/satellites.kml; echo '" +
                         printingOrbitsOf2Sat.createKMLFile() +
-                        "' > /var/www/html/kml/master.kml";
+                        "' > /var/www/html/satellites.kml";
                 executeCommand(command);
+                String command2 = "chmod 777 /var/www/html/kmls.txt; echo '" +
+                        "http://lg1:81/satellites.kml" +
+                        "' > /var/www/html/kmls.txt";
+                executeCommand(command2);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    public static void printSatInfo(String data) {
+        Thread thread = new Thread(() -> {
+            try {
+                String[] datasection = data.split(",");
+                String sat1 = datasection[0].replace("?", "").replace("[", "").replace("]", "");
+                String tle11 = datasection[1].replace("?", "").replace("[", "").replace("]", "");
+                String tle12 = datasection[2].replace("?", "").replace("[", "").replace("]", "");
+                String sat2 = datasection[3].replace("?", "").replace("[", "").replace("]", "");
+                String tle21 = datasection[4].replace("?", "").replace("[", "").replace("]", "");
+                String tle22 = datasection[5].replace("?", "").replace("[", "").replace("]", "");
+
+                System.out.println("sat1: " + sat1 + " tle11: " + tle11 + " tle12: " + tle12 + " sat2: " + sat2 + " tle21: " + tle21 + " tle22: " + tle22);
+                String command = "chmod 777 /var/www/html/kml/" + infoSlave + ".kml; echo '" +
+                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\" " +
+                        "xmlns:atom=\"http://www.w3.org/2005/Atom\" " +
+                        "xmlns=\"http://www.opengis.net/kml/2.2\" " +
+                        "xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
+                        " <Document>\n " +
+                        "  <name>Information</name> \n" +
+                        "  <open>1</open> \n" +
+                        "  <Folder> \n" +
+                        "    <Style id=\"this\"> \n" +
+                        "   <BalloonStyle> \n" +
+                        "    <bgColor> ffffffff </bgColor> \n" +
+                        "    <text><![CDATA[ \n" +
+                        "<b><font size = \"+2\">Satellite 1: </font></b> satellite 1 \n" +
+                        "<br/>\n" +
+                        "<b>TLE 1: </b> primera linea de informacio \n" +
+                        "<br/>\n" +
+                        "<b>TLE 2: </b> segona linea de informacio \n" +
+                        "<br/>\n" +
+                        "<b>Satellite 2: </b> satellite 2 \n" +
+                        "<br/>\n" +
+                        "<b>TLE 1: </b> primera linea informacio \n" +
+                        "<br/>\n" +
+                        "<b>TLE 2: </b> segona linea informacio \n\n" +
+                        "    ]]></text>\n" +
+                        "   </BalloonStyle> \n" +
+                        "   <LabelStyle> \n" +
+                        "    <scale>0</scale> \n" +
+                        "   </LabelStyle> \n" +
+                        "   <IconStyle> \n" +
+                        "    <scale>0</scale> \n" +
+                        "   </IconStyle> \n" +
+                        "   </Style> \n" +
+                        "   <Placemark> \n" +
+                        "    <name>Satellite 1:</name> \n" +
+                        "    <styleUrl>#this</styleUrl> \n" +
+                        "       <Point> \n" +
+                        "     <gx:drawOrder>1</gx:drawOrder> \n" +
+                        "     <gx:altitudeMode>relativeToGround</gx:altitudeMode> \n" +
+                        "     <coordinates>-53.45056676177036,-28.2730248505662,62208.24936269667</coordinates> \n" +
+                        "    </Point> \n" +
+                        "    <gx:balloonVisibility>1</gx:balloonVisibility> \n" +
+                        "   </Placemark> \n" +
+                        "  </Folder> \n" +
+                        " </Document> \n" +
+                        "</kml>\n' > /var/www/html/kml/" + infoSlave + ".kml";
+
+
+                executeCommand(command);
+
+                String command2 = "chmod 777 /var/www/html/balloon.kml; echo '" +
+                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\" " +
+                        "xmlns:atom=\"http://www.w3.org/2005/Atom\" " +
+                        "xmlns=\"http://www.opengis.net/kml/2.2\" " +
+                        "xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
+                        " <Document>\n " +
+                        "  <name>Information</name> \n" +
+                        "  <open>1</open> \n" +
+                        "  <Folder> \n" +
+                        "    <Style id=\"this\"> \n" +
+                        "   <BalloonStyle> \n" +
+                        "    <bgColor> ffffffff </bgColor> \n" +
+                        "    <text><![CDATA[ \n" +
+                        "<b><font size = \"+2\">Satellite 1: </font></b> satellite 1 \n" +
+                        "<br/>\n" +
+                        "<b>TLE 1: </b> primera linea de informacio \n" +
+                        "<br/>\n" +
+                        "<b>TLE 2: </b> segona linea de informacio \n" +
+                        "<br/>\n" +
+                        "<b>Satellite 2: </b> satellite 2 \n" +
+                        "<br/>\n" +
+                        "<b>TLE 1: </b> primera linea informacio \n" +
+                        "<br/>\n" +
+                        "<b>TLE 2: </b> segona linea informacio \n\n" +
+                        "    ]]></text>\n" +
+                        "   </BalloonStyle> \n" +
+                        "   <LabelStyle> \n" +
+                        "    <scale>0</scale> \n" +
+                        "   </LabelStyle> \n" +
+                        "   <IconStyle> \n" +
+                        "    <scale>0</scale> \n" +
+                        "   </IconStyle> \n" +
+                        "   </Style> \n" +
+                        "   <Placemark> \n" +
+                        "    <name>Satellite 1:</name> \n" +
+                        "    <styleUrl>#this</styleUrl> \n" +
+                        "       <Point> \n" +
+                        "     <gx:drawOrder>1</gx:drawOrder> \n" +
+                        "     <gx:altitudeMode>relativeToGround</gx:altitudeMode> \n" +
+                        "     <coordinates>-53.45056676177036,-28.2730248505662,62208.24936269667</coordinates> \n" +
+                        "    </Point> \n" +
+                        "    <gx:balloonVisibility>1</gx:balloonVisibility> \n" +
+                        "   </Placemark> \n" +
+                        "  </Folder> \n" +
+                        " </Document> \n" +
+                        "</kml>\n' >> /var/www/html/balloon.kml";
+
+
+                executeCommand(command2);
+                String command3 = "chmod 777 /var/www/html/kmls.txt; echo '" +
+                        "http://lg1:81/balloon.kml" +
+                        "' >> /var/www/html/kmls.txt";
+                executeCommand(command3);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

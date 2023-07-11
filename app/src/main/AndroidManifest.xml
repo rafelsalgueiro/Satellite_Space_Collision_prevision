@@ -18,13 +18,7 @@
             android:name=".SplashScreen"
             android:exported="true"
             android:screenOrientation="landscape"
-            android:label="@string/title_activity_splash_screen"
-            android:theme="@style/SplashTheme">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+            android:label="@string/title_activity_splash_screen">
         </activity>
         <activity
             android:name=".Configuration"
@@ -34,6 +28,11 @@
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
