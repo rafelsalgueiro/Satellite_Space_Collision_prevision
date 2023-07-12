@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var satellitesSpinner2: Spinner
     private lateinit var infoInLayout: TextView
     private val dataList: MutableList<String> = ArrayList()
+    private var selectedSatellite2: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().apply {
             setKeepOnScreenCondition {
@@ -65,16 +67,26 @@ class MainActivity : AppCompatActivity() {
                 val filteredData = satelliteData.toMutableList()
                 filteredData.remove(selectedSatellite)
 
+                // Guardar la selección actual del satellitesSpinner2
+                selectedSatellite2 = satellitesSpinner2.selectedItem.toString()
+
                 val spinner2Adapter =
                     ArrayAdapter(this@MainActivity, R.layout.simple_spinner_item, filteredData)
                 spinner2Adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
                 satellitesSpinner2.adapter = spinner2Adapter
+
+                // Restaurar la selección previa del satellitesSpinner2
+                val index = filteredData.indexOf(selectedSatellite2)
+                if (index != -1) {
+                    satellitesSpinner2.setSelection(index)
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // Do Nothing
             }
         }
+
     }
 
 
