@@ -72,9 +72,7 @@ public class printingOrbitsOf2Sat {
                 "4.3517,50.8503,1800\n" +
                 "6.9603,50.9375,2000";
 
-        String kmlContent = kmlTemplate.replace("%satellite1Coordinates%", satellite1Coordinates)
+        return kmlTemplate.replace("%satellite1Coordinates%", satellite1Coordinates)
                 .replace("%satellite2Coordinates%", satellite2Coordinates);
-
-        return kmlContent;
     }
 }

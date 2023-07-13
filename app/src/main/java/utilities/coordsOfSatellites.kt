@@ -53,7 +53,7 @@ class coordsOfSatellites {
     }
 
     fun calculatePosition(meanMotion: Double, eccentricity: Double, inclination: Double, rightAscensionOfAscendingNode: Double, argumentOfPerihelion: Double, meanAnomaly: Double, time: Double): Position {
-        /*REVISAR*/
+
         // Calculate the true anomaly.
         val trueAnomaly = meanAnomaly + eccentricity * sin(meanAnomaly)
 
@@ -61,17 +61,21 @@ class coordsOfSatellites {
         val radiusVector = meanMotion * sqrt(1 - eccentricity * eccentricity) * sin(trueAnomaly)
 
         // Calculate the x-coordinate.
-        val x = radiusVector * cos(trueAnomaly) * cos(rightAscensionOfAscendingNode)
+        val x = radiusVector * cos(trueAnomaly) * cos(rightAscensionOfAscendingNode) * cos(time) - radiusVector * sin(trueAnomaly) * sin(rightAscensionOfAscendingNode) * sin(time)
 
         // Calculate the y-coordinate.
-        val y = radiusVector * cos(trueAnomaly) * sin(rightAscensionOfAscendingNode)
+        val y = radiusVector * cos(trueAnomaly) * sin(rightAscensionOfAscendingNode) * cos(time) + radiusVector * sin(trueAnomaly) * cos(rightAscensionOfAscendingNode) * sin(time)
 
         // Calculate the z-coordinate.
         val z = radiusVector * sin(trueAnomaly) * cos(inclination)
 
+        println(x, y, z)
         // Return the position.
-
         return Position(x, y, z)
+    }
+
+    private fun println(x: Double, y: Double, z: Double) {
+        println("x: $x, y: $y, z: $z")
     }
 
     fun Position.toCoordinates(): String {
