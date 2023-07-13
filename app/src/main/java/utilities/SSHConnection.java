@@ -102,7 +102,7 @@ public class SSHConnection {
                         " <overlayXY x=\"0\" y=\"1\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
                         " <screenXY x=\"0.02\" y=\"0.95\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
                         " <rotationXY x=\"0\" y=\"0\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
-                        " <size x=\"0.6\" y=\"0.65\" xunits=\"fraction\" yunits=\"fraction\"/> \n" +
+                        " <size x=\"600\" y=\"650\" xunits=\"pixels\" yunits=\"pixels\"/> \n" +
                         "</ScreenOverlay> \n" +
                         " </Folder> \n" +
                         " </Document> \n" +
@@ -162,10 +162,10 @@ public class SSHConnection {
         final String[] command = {null};
         Thread thread = new Thread(() -> {
             try {
-                for (int i = numSlaves; i >= 1; i--){
-                    if( i == numSlaves ){
+                for (int i = numSlaves; i >= 1; i--) {
+                    if (i == numSlaves) {
                         command[0] = "sshpass -p " + password + " ssh -t lg" + i + " \"echo " + password + " | sudo -S reboot\"";
-                    }else{
+                    } else {
                         command[0] += "; sshpass -p " + password + " ssh -t lg" + i + " \"echo " + password + " | sudo -S reboot\"";
                     }
                     executeCommand(command[0]);
@@ -181,10 +181,10 @@ public class SSHConnection {
         final String[] command = {null};
         Thread thread = new Thread(() -> {
             try {
-                for (int i = numSlaves; i >= 1; i--){
-                    if( i == numSlaves ){
+                for (int i = numSlaves; i >= 1; i--) {
+                    if (i == numSlaves) {
                         command[0] = "sshpass -p " + password + " ssh -t lg" + i + " \"echo " + password + " | sudo -S poweroff\"";
-                    }else{
+                    } else {
                         command[0] += "; sshpass -p " + password + " ssh -t lg" + i + " \"echo " + password + " | sudo -S poweroff\"";
                     }
                     executeCommand(command[0]);
@@ -242,120 +242,69 @@ public class SSHConnection {
     public static void printSatInfo(String data) {
         Thread thread = new Thread(() -> {
             try {
-                String[] datasection = data.split(",");
-                String sat1 = datasection[0].replace("?", "").replace("[", "").replace("]", "");
-                String tle11 = datasection[1].replace("?", "").replace("[", "").replace("]", "");
-                String tle12 = datasection[2].replace("?", "").replace("[", "").replace("]", "");
-                String sat2 = datasection[3].replace("?", "").replace("[", "").replace("]", "");
-                String tle21 = datasection[4].replace("?", "").replace("[", "").replace("]", "");
-                String tle22 = datasection[5].replace("?", "").replace("[", "").replace("]", "");
-
-                System.out.println("sat1: " + sat1 + " tle11: " + tle11 + " tle12: " + tle12 + " sat2: " + sat2 + " tle21: " + tle21 + " tle22: " + tle22);
+                String[] dataSection = data.split(",");
+                String sat1 = dataSection[0].replace("?", "").replace("[", "").replace("]", "");
+                String tle11 = dataSection[1].replace("?", "").replace("[", "").replace("]", "");
+                String tle12 = dataSection[2].replace("?", "").replace("[", "").replace("]", "");
+                String sat2 = dataSection[3].replace("?", "").replace("[", "").replace("]", "");
+                String tle21 = dataSection[4].replace("?", "").replace("[", "").replace("]", "");
+                String tle22 = dataSection[5].replace("?", "").replace("[", "").replace("]", "");
                 String command = "chmod 777 /var/www/html/kml/" + infoSlave + ".kml; echo '" +
                         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\" " +
-                        "xmlns:atom=\"http://www.w3.org/2005/Atom\" " +
-                        "xmlns=\"http://www.opengis.net/kml/2.2\" " +
-                        "xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
-                        " <Document>\n " +
-                        "  <name>Information</name> \n" +
-                        "  <open>1</open> \n" +
-                        "  <Folder> \n" +
-                        "    <Style id=\"this\"> \n" +
-                        "   <BalloonStyle> \n" +
-                        "    <bgColor> ffffffff </bgColor> \n" +
-                        "    <text><![CDATA[ \n" +
-                        "<b><font size = \"+2\">Satellite 1: </font></b> satellite 1 \n" +
-                        "<br/>\n" +
-                        "<b>TLE 1: </b> primera linea de informacio \n" +
-                        "<br/>\n" +
-                        "<b>TLE 2: </b> segona linea de informacio \n" +
-                        "<br/>\n" +
-                        "<b>Satellite 2: </b> satellite 2 \n" +
-                        "<br/>\n" +
-                        "<b>TLE 1: </b> primera linea informacio \n" +
-                        "<br/>\n" +
-                        "<b>TLE 2: </b> segona linea informacio \n\n" +
-                        "    ]]></text>\n" +
-                        "   </BalloonStyle> \n" +
-                        "   <LabelStyle> \n" +
-                        "    <scale>0</scale> \n" +
-                        "   </LabelStyle> \n" +
-                        "   <IconStyle> \n" +
-                        "    <scale>0</scale> \n" +
-                        "   </IconStyle> \n" +
-                        "   </Style> \n" +
-                        "   <Placemark> \n" +
-                        "    <name>Satellite 1:</name> \n" +
-                        "    <styleUrl>#this</styleUrl> \n" +
-                        "       <Point> \n" +
-                        "     <gx:drawOrder>1</gx:drawOrder> \n" +
-                        "     <gx:altitudeMode>relativeToGround</gx:altitudeMode> \n" +
-                        "     <coordinates>-53.45056676177036,-28.2730248505662,62208.24936269667</coordinates> \n" +
-                        "    </Point> \n" +
-                        "    <gx:balloonVisibility>1</gx:balloonVisibility> \n" +
-                        "   </Placemark> \n" +
-                        "  </Folder> \n" +
-                        " </Document> \n" +
+                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n" +
+                        "<Document>\n" +
+                        " <name>historic.kml</name> \n" +
+                        " <Style id=\"purple_paddle\">\n" +
+                        "   <BalloonStyle>\n" +
+                        "     <text>$[description]</text>\n" +
+                        "     <bgColor>ffffffff</bgColor>\n" +
+                        "   </BalloonStyle>\n" +
+                        " </Style>\n" +
+                        " <Placemark id=\"0A7ACC68BF23CB81B354\">\n" +
+                        "   <name>Historic Track Map</name>\n" +
+                        "   <Snippet maxLines=\"0\"></Snippet>\n" +
+                        "   <description><![CDATA[<!-- BalloonStyle background color:\n" +
+                        "                ffffffff\n" +
+                        "     -->" +
+                        " <tr>\n" +
+                        "   <td colspan=\"2\" align=\"center\">\n" +
+                        "     <h2>%sat1%</font></h2>\n" +
+                        "     <h3>TLE 1: %tle11%</font></h3>\n" +
+                        "     <h3>TLE 1: %tle12%</font></h3>\n" +
+                        "   </td>\n" +
+                        " </tr>\n" +
+                        " <tr>\n" +
+                        "   <td colspan=\"2\" align=\"center\">\n" +
+                        "     <h2>%sat2%</font></h2>\n" +
+                        "     <h3>TLE 1: %tle21%</font></h3>\n" +
+                        "     <h3>TLE 1: %tle22%</font></h3>\n" +
+                        "   </td>\n" +
+                        " </tr>\n" +
+                        "</table>]]></description>\n" +
+                        "   <LookAt>\n" +
+                        "     <longitude>-17.841486</longitude>\n" +
+                        "     <latitude>28.638478</latitude>\n" +
+                        "     <altitude>0</altitude>\n" +
+                        "     <heading>0</heading>\n" +
+                        "     <tilt>0</tilt>\n" +
+                        "     <range>24000</range>\n" +
+                        "  </LookAt>\n" +
+                        "   <styleUrl>#purple_paddle</styleUrl>\n" +
+                        "   <gx:balloonVisibility>1</gx:balloonVisibility>\n" +
+                        "   <Point>\n" +
+                        "     <coordinates>-17.841486,28.638478,0</coordinates>\n" +
+                        "   </Point>\n" +
+                        " </Placemark>\n" +
+                        "</Document>\n" +
                         "</kml>\n' > /var/www/html/kml/" + infoSlave + ".kml";
 
-
-                executeCommand(command);
-
-                String command2 = "chmod 777 /var/www/html/balloon.kml; echo '" +
-                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\" " +
-                        "xmlns:atom=\"http://www.w3.org/2005/Atom\" " +
-                        "xmlns=\"http://www.opengis.net/kml/2.2\" " +
-                        "xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
-                        " <Document>\n " +
-                        "  <name>Information</name> \n" +
-                        "  <open>1</open> \n" +
-                        "  <Folder> \n" +
-                        "    <Style id=\"this\"> \n" +
-                        "   <BalloonStyle> \n" +
-                        "    <bgColor> ffffffff </bgColor> \n" +
-                        "    <text><![CDATA[ \n" +
-                        "<b><font size = \"+2\">Satellite 1: </font></b> satellite 1 \n" +
-                        "<br/>\n" +
-                        "<b>TLE 1: </b> primera linea de informacio \n" +
-                        "<br/>\n" +
-                        "<b>TLE 2: </b> segona linea de informacio \n" +
-                        "<br/>\n" +
-                        "<b>Satellite 2: </b> satellite 2 \n" +
-                        "<br/>\n" +
-                        "<b>TLE 1: </b> primera linea informacio \n" +
-                        "<br/>\n" +
-                        "<b>TLE 2: </b> segona linea informacio \n\n" +
-                        "    ]]></text>\n" +
-                        "   </BalloonStyle> \n" +
-                        "   <LabelStyle> \n" +
-                        "    <scale>0</scale> \n" +
-                        "   </LabelStyle> \n" +
-                        "   <IconStyle> \n" +
-                        "    <scale>0</scale> \n" +
-                        "   </IconStyle> \n" +
-                        "   </Style> \n" +
-                        "   <Placemark> \n" +
-                        "    <name>Satellite 1:</name> \n" +
-                        "    <styleUrl>#this</styleUrl> \n" +
-                        "       <Point> \n" +
-                        "     <gx:drawOrder>1</gx:drawOrder> \n" +
-                        "     <gx:altitudeMode>relativeToGround</gx:altitudeMode> \n" +
-                        "     <coordinates>-53.45056676177036,-28.2730248505662,62208.24936269667</coordinates> \n" +
-                        "    </Point> \n" +
-                        "    <gx:balloonVisibility>1</gx:balloonVisibility> \n" +
-                        "   </Placemark> \n" +
-                        "  </Folder> \n" +
-                        " </Document> \n" +
-                        "</kml>\n' >> /var/www/html/balloon.kml";
-
-
-                executeCommand(command2);
-                String command3 = "chmod 777 /var/www/html/kmls.txt; echo '" +
-                        "http://lg1:81/balloon.kml" +
-                        "' >> /var/www/html/kmls.txt";
-                executeCommand(command3);
+                String kmlContent = command.replace("%sat1%", data.replace("[", "").replace("]", ""))
+                        .replace("%tle11%", tle11)
+                        .replace("%tle12%", tle12)
+                        .replace("%sat2%", sat2)
+                        .replace("%tle21%", tle21)
+                        .replace("%tle22%", tle22);
+                executeCommand(kmlContent);
 
             } catch (Exception e) {
                 e.printStackTrace();
