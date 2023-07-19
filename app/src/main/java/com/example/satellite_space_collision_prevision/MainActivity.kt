@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
         val spinnerAdapter = ArrayAdapter(this, R.layout.simple_spinner_item, satelliteData)
         spinnerAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
 
-        infoInLayout
         satellitesSpinner1.adapter = spinnerAdapter
         satellitesSpinner2.adapter = spinnerAdapter
         configurationButton.setOnClickListener { onConfigurationButtonClicked() }
