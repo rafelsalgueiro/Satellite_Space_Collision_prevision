@@ -1,10 +1,19 @@
 package utilities
 
 fun createKMLFile(): String {
-    val tle1 = "1 56446U 23063A   23172.32771504  .00000141  00000+0  58996-5 0  9990"
+    val tle1 = "1 56446U 23063A   23172.32771504  .00000141  00000+0  58996 5 0  9990"
     val tle2 = "2 56446  41.4746 130.7235 0004813  98.5802 261.5581 15.59339219  6520"
-    val coordsOfSatellites = CoordsOfSatellites()
-    val orbit = coordsOfSatellites.calculateOrbit(tle1, tle2)
+    val satellite = SGP4Satellite(tle1, tle2)
+    val timeStepMinutes = 10
+    val totalTimeMinutes = 12 * 60
+    val positionsAndVelocities = mutableListOf<String>()
+
+    for (timeMinutes in 0..totalTimeMinutes step timeStepMinutes) {
+        val tSinceEpoch = timeMinutes.toDouble()
+        val position = satellite.calculatePositionAndVelocity(tSinceEpoch)
+        positionsAndVelocities.add(position)
+    }
+    println(positionsAndVelocities) //array with x y z, x y z, x y z, etc
 
     val kmlTemplate = "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
             "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +

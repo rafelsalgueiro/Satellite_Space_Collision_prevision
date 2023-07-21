@@ -16,6 +16,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.satellite_space_collision_prevision.databinding.ActivityMainBinding
 import com.opencsv.CSVReader
 import utilities.SSHConnection
+import utilities.createKMLFile
 import java.io.InputStreamReader
 
 
@@ -97,6 +98,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkCollisionButtonClicked() {
         readAllLineSat()
         infoInLayout.text = dataList.toString()
+        createKMLFile()
         if (SSHConnection.isConnected()) {
             SSHConnection.testingPrintingSats()
             SSHConnection.printSatInfo(dataList.toString())
