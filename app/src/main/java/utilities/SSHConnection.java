@@ -68,6 +68,8 @@ public class SSHConnection {
                         session.setConfig(prop);
 
                         session.connect(Integer.MAX_VALUE);
+                        cleanKml();
+                        Thread.sleep(300);
                         displayLogos();
                     } else {
                         session.sendKeepAliveMsg();
@@ -131,13 +133,7 @@ public class SSHConnection {
                             " </kml>\n' > /var/www/html/kml/" + slaves + ".kml";
                     executeCommand(command);
 
-                    String command2 = "chmod 777 /var/www/html/kml/master.kml; echo '" +
-                            "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
-                            "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
-                            "xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
-                            "<Document>\n " +
-                            "</Document> \n" +
-                            "</kml>\n' > /var/www/html/kml/master.kml";
+                    String command2 = "chmod 777 /var/www/html/kmls.txt; echo '' > /var/www/html/kmls.txt";
                     executeCommand(command2);
                 }
             } catch (Exception e) {
@@ -247,7 +243,7 @@ public class SSHConnection {
         thread.start();
     }
 
-    public static void printSatInfo(String data) {
+    public static void printSatInfo(String data, String collision) {
         Thread thread = new Thread(() -> {
             try {
                 String[] dataSection = data.split(",");
@@ -288,6 +284,9 @@ public class SSHConnection {
                         "     <h3>TLE 1: %tle22%</font></h3>\n" +
                         "   </td>\n" +
                         " </tr>\n" +
+                        " <tr>\n" +
+                        "   <td colspan=\"2\" align=\"center\">\n" +
+                        "     <h2>Collision: %collision% </font></h2>\n" +
                         "</table>]]></description>\n" +
                         "   <LookAt>\n" +
                         "     <longitude>-17.841486</longitude>\n" +
@@ -306,8 +305,9 @@ public class SSHConnection {
                         "</Document>\n" +
                         "</kml>\n' > /var/www/html/kml/" + infoSlave + ".kml";
 
-                String kmlContent = command.replace("%sat1%", "sat1").replace("%tle11%", "tle11").replace("%tle12%", "tle12").replace("%sat2%", "sat2").replace("%tle21%", "tle21").replace("%tle22%", "tle22");
+                String kmlContent = command.replace("%sat1%", "sat1").replace("%tle11%", "tle11").replace("%tle12%", "tle12").replace("%sat2%", "sat2").replace("%tle21%", "tle21").replace("%tle22%", "tle22").replace("%collision%", collision);
                 executeCommand(kmlContent);
+
 
             } catch (Exception e) {
                 e.printStackTrace();

@@ -16,6 +16,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.satellite_space_collision_prevision.databinding.ActivityMainBinding
 import com.opencsv.CSVReader
 import utilities.SSHConnection
+import utilities.callToServer
 import utilities.createKMLFile
 import java.io.InputStreamReader
 
@@ -23,12 +24,14 @@ import java.io.InputStreamReader
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private var mainActivityObserver: MainActivityObserver? = null
     private val viewModel: SplashScreen = SplashScreen()
     private lateinit var configurationButton: ImageButton
     private lateinit var checkCollisionButton: Button
     private lateinit var satellitesSpinner1: Spinner
     private lateinit var satellitesSpinner2: Spinner
     private lateinit var infoInLayout: TextView
+    private lateinit var collisionInfo: TextView
     private val dataList: MutableList<String> = ArrayList()
     private var selectedSatellite2: String? = null
 
@@ -46,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         satellitesSpinner1 = binding.selectSat1
         satellitesSpinner2 = binding.selectSat2
         infoInLayout = binding.satInfo
+        collisionInfo = binding.probabilityText
 
         val satelliteData = readSatelliteDataName()
         val spinnerAdapter = ArrayAdapter(this, R.layout.simple_spinner_item, satelliteData)
@@ -98,10 +102,12 @@ class MainActivity : AppCompatActivity() {
     private fun checkCollisionButtonClicked() {
         readAllLineSat()
         infoInLayout.text = dataList.toString()
-        createKMLFile()
+        val returnedData = callToServer.sendPostRequest()
+        createKMLFile()  //TESTING
+        collisionInfo.text = "Collision: $returnedData"
         if (SSHConnection.isConnected()) {
+            SSHConnection.printSatInfo(dataList.toString(), returnedData)
             SSHConnection.testingPrintingSats()
-            SSHConnection.printSatInfo(dataList.toString())
         }
     }
 
@@ -149,6 +155,12 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
         return data
+    }
+
+    @Override
+    override fun onDestroy() {
+        super.onDestroy()
+        mainActivityObserver?.onMainActivityDestroyed()
     }
 
 

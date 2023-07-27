@@ -16,7 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import utilities.SSHConnection
 
-class Configuration : AppCompatActivity() {
+class Configuration : AppCompatActivity(), MainActivityObserver {
     private val binding by lazy { ConfigurationBinding.inflate(layoutInflater) }
     private lateinit var ipAddressEditText: EditText
     private lateinit var masterPasswordEditText: EditText
@@ -82,8 +82,6 @@ class Configuration : AppCompatActivity() {
             sshConnection = SSHConnection(ipAddress, masterPassword, numSlaves)
             val isConnected = sshConnection.connect()
             if (isConnected) {
-                // Connection established successfully
-                // Perform any operations you need on the SSH connection
                 updateStatusTextView("Connected")
                 editor.apply{
                     putString("ipAddress", ipAddress)
@@ -91,6 +89,7 @@ class Configuration : AppCompatActivity() {
                     putInt("numSlaves", numSlaves)
                     putString("status", statusTextView.text.toString())
                     apply()
+
                 }
             } else {
                 // Connection failed
@@ -155,7 +154,7 @@ class Configuration : AppCompatActivity() {
     }
 
 
-    private fun updateStatusTextView(status: String) {
+    fun updateStatusTextView(status: String) {
         val statusText = getString(R.string.status_label, status)
         statusTextView.text = statusText
     }
@@ -172,4 +171,14 @@ class Configuration : AppCompatActivity() {
         }
         super.onDestroy()
     }
+
+    override fun onMainActivityDestroyed() {
+        updateStatusTextView("Disconnected")
+        sshConnection.disconnect()
+    }
+
+
+}
+interface MainActivityObserver {
+    fun onMainActivityDestroyed()
 }
