@@ -7,15 +7,16 @@ import java.util.Date
 fun createKMLFile(): String {
     val tle1 = "1 56446U 23063A   23172.32771504  .00000141  00000+0  58996-5 0  9990"
     val tle2 = "2 56446  41.4746 130.7235 0004813  98.5802 261.5581 15.59339219  6520"
-    val date: Date? = Date()
-    val intervalMilliseconds = 10 * 60 * 1000 // 10 minutos en milisegundos
-    val numIntervals = 144 // 24 horas / 10 minutos
+    val initialDate = Date()
+
+    val intervalSeconds = 10 * 60
+    val numIntervals = 144
 
     val allCoordinates = mutableListOf<String>()
 
     for (i in 0 until numIntervals) {
-        val currentDate = Date()
-        val lla_coords = TlePredictionEngine.getSatellitePosition(tle1, tle2, true, date)
+        val currentDate = Date(initialDate.time + (i * intervalSeconds * 1000))
+        val lla_coords = TlePredictionEngine.getSatellitePosition(tle1, tle2, true, currentDate)
         val latitude = lla_coords[0]
         val longitude = lla_coords[1]
         val altitude = lla_coords[2]
