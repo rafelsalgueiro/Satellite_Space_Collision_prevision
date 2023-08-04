@@ -1,6 +1,6 @@
 package utilities;
 
-import static utilities.PrintingOrbitsOf2SatKt.createKMLFile;
+import static utilities.PrintingOrbitsOf2Sat2Kt.createKMLFile1;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -228,9 +228,12 @@ public class SSHConnection {
     public static void testingPrintingSats() {
         Thread thread = new Thread(() -> {
             try {
-                String command = "chmod 777 /var/www/html/satellites.kml; echo '" +
-                        createKMLFile() +
-                        "' > /var/www/html/satellites.kml";
+                String command = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    command = "chmod 777 /var/www/html/satellites.kml; echo '" +
+                            createKMLFile1("TIANZHOU-6", "sat2") +
+                            "' > /var/www/html/satellites.kml";
+                }
                 executeCommand(command);
                 String command2 = "chmod 777 /var/www/html/kmls.txt; echo '" +
                         "http://lg1:81/satellites.kml" +

@@ -21,7 +21,7 @@ public class callToServer extends Thread {
     @Override
     public void run() {
         try {
-            URL obj = new URL("http://192.168.1.114:8080/predict");
+            URL obj = new URL("http://192.168.1.115:8080/predict");
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json");

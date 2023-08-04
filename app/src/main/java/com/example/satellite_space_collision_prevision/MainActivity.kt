@@ -3,6 +3,7 @@ package com.example.satellite_space_collision_prevision
 
 import android.R
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -11,12 +12,13 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.satellite_space_collision_prevision.databinding.ActivityMainBinding
 import com.opencsv.CSVReader
 import utilities.SSHConnection
-import utilities.createKMLFile
+import utilities.callToServer
 import java.io.InputStreamReader
 
 
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private val dataList: MutableList<String> = ArrayList()
     private var selectedSatellite2: String? = null
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().apply {
             setKeepOnScreenCondition {
@@ -98,14 +101,14 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun checkCollisionButtonClicked() {
         readAllLineSat()
         infoInLayout.text = dataList.toString()
-        //val returnedData = callToServer.sendPostRequest()
-        createKMLFile()  //TESTING
-        //collisionInfo.text = "Collision: $returnedData"
+        val returnedData = callToServer.sendPostRequest()
+        collisionInfo.text = "Collision: $returnedData"
         if (SSHConnection.isConnected()) {
-            //SSHConnection.printSatInfo(dataList.toString(), returnedData)
+            SSHConnection.printSatInfo(dataList.toString(), "returnedData")
             SSHConnection.testingPrintingSats()
         }
     }
