@@ -94,7 +94,8 @@ public class SSHConnection {
                 String command = "chmod 777 /var/www/html/kml/" + logoSlaves + ".kml; echo '" +
                         "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
                         "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
-                        " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
+                        " xmlns:gx=\"http://www.google.com/kml/ext/2.2\" \n" +
+                        "xmlns:kml=\"http://www.opengis.net/kml/2.2\"> \n" +
                         " <Document>\n " +
                         " <Folder> \n" +
                         "<name>Logos</name> \n" +
@@ -136,6 +137,18 @@ public class SSHConnection {
                     String command2 = "chmod 777 /var/www/html/kmls.txt; echo '' > /var/www/html/kmls.txt";
                     executeCommand(command2);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    public static void flyto(String poi) {
+        Thread thread = new Thread(() -> {
+            try {
+                String command = "echo 'flytoview=<gx:duration>5</gx:duration><LookAt><longitude>-14.441554125598216</longitude><latitude>-56.23493895639559</latitude><altitude>25000000</altitude><heading>0</heading><tilt>0</tilt><range>1492.66</range><gx:altitudeMode>relativeToGround</gx:altitudeMode></LookAt>' > /tmp/query.txt";
+                executeCommand(command);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -225,6 +238,18 @@ public class SSHConnection {
 
     }
 
+    public static void tour() {
+        Thread thread = new Thread(() -> {
+            try {
+                String command = "echo \"playtour=Satellitetour\" > /tmp/query.txt";
+                executeCommand(command);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
     public static void testingPrintingSats() {
         Thread thread = new Thread(() -> {
             try {
@@ -237,7 +262,7 @@ public class SSHConnection {
                 executeCommand(command);
                 String command2 = "chmod 777 /var/www/html/kmls.txt; echo '" +
                         "http://lg1:81/satellites.kml" +
-                        "' > /var/www/html/kmls.txt";
+                        "' >> /var/www/html/kmls.txt";
                 executeCommand(command2);
             } catch (Exception e) {
                 e.printStackTrace();

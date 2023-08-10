@@ -18,7 +18,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.satellite_space_collision_prevision.databinding.ActivityMainBinding
 import com.opencsv.CSVReader
 import utilities.SSHConnection
-import utilities.callToServer
 import java.io.InputStreamReader
 
 
@@ -35,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var collisionInfo: TextView
     private val dataList: MutableList<String> = ArrayList()
     private var selectedSatellite2: String? = null
+    private lateinit var playButton: ImageButton
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         satellitesSpinner2 = binding.selectSat2
         infoInLayout = binding.satInfo
         collisionInfo = binding.probabilityText
+        playButton = binding.playButton
 
         val satelliteData = readSatelliteDataName()
         val spinnerAdapter = ArrayAdapter(this, R.layout.simple_spinner_item, satelliteData)
@@ -61,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         satellitesSpinner2.adapter = spinnerAdapter
         configurationButton.setOnClickListener { onConfigurationButtonClicked() }
         checkCollisionButton.setOnClickListener { checkCollisionButtonClicked() }
+        playButton.setOnClickListener { onPlayButtonClicked() }
 
         satellitesSpinner1.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -95,6 +97,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun onPlayButtonClicked() {
+        SSHConnection.tour()
+    }
+
 
     private fun onConfigurationButtonClicked() {
         val intent = Intent(this, Configuration::class.java)
@@ -105,8 +111,8 @@ class MainActivity : AppCompatActivity() {
     private fun checkCollisionButtonClicked() {
         readAllLineSat()
         infoInLayout.text = dataList.toString()
-        val returnedData = callToServer.sendPostRequest()
-        collisionInfo.text = "Collision: $returnedData"
+//        val returnedData = callToServer.sendPostRequest()
+//        collisionInfo.text = "Collision: $returnedData"
         if (SSHConnection.isConnected()) {
             SSHConnection.printSatInfo(dataList.toString(), "returnedData")
             SSHConnection.testingPrintingSats()
