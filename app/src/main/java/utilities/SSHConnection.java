@@ -147,7 +147,8 @@ public class SSHConnection {
     public static void flyto(String poi) {
         Thread thread = new Thread(() -> {
             try {
-                String command = "echo 'flytoview=<gx:duration>5</gx:duration><LookAt><longitude>-14.441554125598216</longitude><latitude>-56.23493895639559</latitude><altitude>25000000</altitude><heading>0</heading><tilt>0</tilt><range>1492.66</range><gx:altitudeMode>relativeToGround</gx:altitudeMode></LookAt>' > /tmp/query.txt";
+                String[] pos = poi.split(",");
+                String command = "echo 'flytoview=<gx:duration>5</gx:duration><LookAt><longitude>"+pos[0]+"</longitude><latitude>"+pos[1]+"</latitude><altitude>25000000</altitude><heading>0</heading><tilt>0</tilt><range>1492.66</range><gx:altitudeMode>relativeToGround</gx:altitudeMode></LookAt>' > /tmp/query.txt";
                 executeCommand(command);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -342,5 +343,69 @@ public class SSHConnection {
             }
         });
         thread.start();
+    }
+
+    public static void printCollision(String circleCoordinates) {
+        Thread thread = new Thread(() -> {
+            try {
+                String command = "chmod 777 /var/www/html/collision.kml; echo '" +
+                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">\n" +
+                        "    <Document>\n" +
+                        "        <Style id=\"style_dfym\">\n" +
+                        "            <LineStyle>\n" +
+                        "                <color>FFB57EDC</color>\n" +
+                        "                <width>2</width>\n" +
+                        "            </LineStyle>\n" +
+                        "\n" +
+                        "            <PolyStyle>\n" +
+                        "                <color>640000ff</color>\n" +
+                        "                <altitudeMode>relativeToGround</altitudeMode>\n" +
+                        "                <colorMode>normal</colorMode>\n" +
+                        "                <fill>1</fill>\n" +
+                        "                <outline>1</outline>\n" +
+                        "            </PolyStyle>\n" +
+                        "        </Style>\n" +
+                        "        \n" +
+                        "<Placemark>\n" +
+                        "      <name>Collision</name>\n" +
+                        "      <styleUrl>style_dfym</styleUrl>\n" +
+                        "            <Polygon id=\"Path\">\n" +
+                        "        <extrude>0</extrude>\n" +
+                        "        <outerBoundaryIs>\n" +
+                        "          <LinearRing>\n" +
+                        "            <coordinates>\n" +
+                        "              ${circleCoordinates}\n" +
+                        "            </coordinates>\n" +
+                        "          </LinearRing>\n" +
+                        "        </outerBoundaryIs>\n" +
+                        "      </Polygon>\n" +
+                        "   </Placemark>" +
+                        "    </Document>\n" +
+                        "</kml>' > /var/www/html/collision.kml";
+                command = command.replace("${circleCoordinates}", circleCoordinates);
+                executeCommand(command);
+                String command2 = "chmod 777 /var/www/html/kmls.txt; echo '" +
+                        "http://lg1:81/collision.kml" +
+                        "' > /var/www/html/kmls.txt";
+                executeCommand(command2);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    public static void stopTour() {
+        Thread thread = new Thread(() -> {
+            try {
+                String command = "echo \"exittour=true\" > /tmp/query.txt";
+                executeCommand(command);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+
     }
 }

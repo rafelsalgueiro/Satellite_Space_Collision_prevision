@@ -18,6 +18,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.satellite_space_collision_prevision.databinding.ActivityMainBinding
 import com.opencsv.CSVReader
 import utilities.SSHConnection
+import utilities.callToServer
 import java.io.InputStreamReader
 
 
@@ -35,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private val dataList: MutableList<String> = ArrayList()
     private var selectedSatellite2: String? = null
     private lateinit var playButton: ImageButton
+    private var isPlaying = false
+    private lateinit var returnedData: String
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,7 +101,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onPlayButtonClicked() {
-        SSHConnection.tour()
+        if (!isPlaying) {
+            SSHConnection.tour()
+            playButton.setImageResource(R.drawable.ic_media_pause)
+            isPlaying = true
+        } else {
+            SSHConnection.stopTour()
+            playButton.setImageResource(R.drawable.ic_media_play)
+            isPlaying = false
+        }
     }
 
 
@@ -111,10 +122,10 @@ class MainActivity : AppCompatActivity() {
     private fun checkCollisionButtonClicked() {
         readAllLineSat()
         infoInLayout.text = dataList.toString()
-//        val returnedData = callToServer.sendPostRequest()
-//        collisionInfo.text = "Collision: $returnedData"
+        returnedData = callToServer.sendPostRequest()
+        collisionInfo.text = "Collision: $returnedData"
         if (SSHConnection.isConnected()) {
-            SSHConnection.printSatInfo(dataList.toString(), "returnedData")
+            SSHConnection.printSatInfo(dataList.toString(), returnedData)
             SSHConnection.testingPrintingSats()
         }
     }
