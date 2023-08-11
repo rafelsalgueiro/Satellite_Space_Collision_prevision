@@ -265,6 +265,8 @@ fun createKMLFile1(sat1: String, sat2: String): String {
 fun getTour(coords: String) {
     val coords = coords.split("\n")
     val initPosition = coords[0]
+    val coord = coords[0].split(",")
+    val alt = coord[2].toDouble() + 500000
     var kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n" +
             "  <Document>\n" +
@@ -273,12 +275,26 @@ fun getTour(coords: String) {
             "    <Folder>\n" +
             "    <gx:Tour>\n" +
             "      <name>Satellitetour</name>\n" +
-            "      <gx:Playlist>\n"
+            "      <gx:Playlist>\n" +
+            "<gx:FlyTo>\n" +
+            "    <gx:duration>2</gx:duration>\n" +
+            "    <gx:flyToMode>smooth</gx:flyToMode>\n" +
+            "     <LookAt>\n" +
+            "      <longitude>${coord[0]}</longitude>\n" +
+            "      <latitude>${coord[1]}</latitude>\n" +
+            "      <altitude>${alt}</altitude>\n" +
+            "      <heading>0</heading>\n" +
+            "      <tilt>30</tilt>\n" +
+            "      <range>10000000</range>\n" +
+            "      <gx:altitudeMode>absolute</gx:altitudeMode>\n" +
+            "      </LookAt>\n" +
+            "    </gx:FlyTo>\n"
 
 
     for (coord in coords) {
         val coord = coord.split(",")
         val alt = coord[2].toDouble() + 500000
+
         kml = kml + "<gx:FlyTo>\n" +
                 "    <gx:duration>0.5</gx:duration>\n" +
                 "    <gx:flyToMode>smooth</gx:flyToMode>\n" +
