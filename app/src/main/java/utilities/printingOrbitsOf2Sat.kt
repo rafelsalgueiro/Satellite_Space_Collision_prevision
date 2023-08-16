@@ -1,268 +1,179 @@
 package utilities
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import kotlin.math.*
 
-fun createKMLFile(sat1: String, sat2: String): String {
-
-
-//    val url = "https://celestrak.com/NORAD/elements/gp.php?NAME=$sat1&FORMAT=TLE"
-//    val response = Jsoup.connect(url).ignoreContentType(true).execute().body()
-//    val lines = response.split("\n")
-    val tle1 = "1 56446U 23063A   23172.32771504  .00000141  00000+0  58996-5 0  9990"
-    val tle2 = "2 56446  41.4746 130.7235 0004813  98.5802 261.5581 15.59339219  6520"
-
-
-    val intervalSeconds = 10 * 60.0
-
-
-    val numIntervals = 144
-
-    val allCoordinates = mutableListOf<String>()
-
-    for (i in 0 until numIntervals) {
-
-
-
-        val coordinates =
-        allCoordinates.add("coordinates")
-    }
-
-    val coordinates = allCoordinates.joinToString(" ")
-
-//    /* Inserts the orbit part as a tour */
-//    String orbit = ActionBuildCommandUtility.buildCommandInsertOrbit (lla_coords, 100000);
-
-    val kmlTemplate = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">\n" +
-            "    <Document id=\"1\">\n" +
-            "        <Style id=\"4\">\n" +
-            "            <LineStyle id=\"5\">\n" +
+@RequiresApi(Build.VERSION_CODES.O)
+fun createKMLFile1(sat1: String, sat2: String): String {
+    val kmlTemplate = "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
+            "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
+            " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
+            "    <Document>\n" +
+            "        <name>Satellite Trajectories</name>\n" +
+            "        \n" +
+            " <open>1</open>\n" +
+            "        <Style id=\"satellite1\">\n" +
+            "            <LineStyle>\n" +
             "                <color>ff0000ff</color>\n" +
-            "                <colorMode>normal</colorMode>\n" +
+            "                <width>2</width>\n" +
             "            </LineStyle>\n" +
             "        </Style>\n" +
-            "        <Placemark id=\"3\">\n" +
+            "        \n" +
+            "        <Style id=\"satellite2\">\n" +
+            "            <LineStyle>\n" +
+            "                <color>ff00ff00</color>\n" +
+            "                <width>2</width>\n" +
+            "            </LineStyle>\n" +
+            "        </Style>\n" +
+            "        <Placemark>\n" +
             "            <name>Satellite 1</name>\n" +
-            "            <styleUrl>#4</styleUrl>\n" +
-            "            <LineString id=\"8\"> \n" +
-            "                <coordinates>-83.95877531568276, -70.14082451150506, 1003399.9375\n" +
-            "-61.64926012777841, 110.24623365733756, 991114.9375\n" +
-            "-27.19116579338106, 113.0041274404053, 975836.0\n" +
-            "7.295323344943327, 115.63118211973229, 972598.375\n" +
-            "41.75242730191103, 118.28125453656222, 985819.0625\n" +
-            "76.13419256478619, 121.38027528753707, 1003551.8125\n" +
-            "69.56759405522257, -57.376054726397484, 1011093.25\n" +
-            "35.33723701077366, -54.49894682155633, 1006964.625\n" +
-            "1.132337575465275, -51.86299240574082, 1001812.9375\n" +
-            "-33.08844845296574, -49.230391612807786, 1003040.6875\n" +
-            "-67.36080774571565, -46.39625242803518, 1005231.125\n" +
-            "-78.28774437990204, 134.75628553165828, 998223.5625\n" +
-            "-43.86055835904629, 137.98734749966783, 982591.75\n" +
-            "-9.381051381600951, 140.64328021880561, 971990.5\n" +
-            "25.096925633470306, 143.26879127538018, 977890.5625\n" +
-            "59.518541635057915, 146.00624913245125, 995586.5\n" +
-            "86.13983230258624, -34.58578984357261, 1009270.0\n" +
-            "51.88610235079756, -29.537945367663863, 1009895.5\n" +
-            "17.674113392574107, -26.851958108630715, 1003675.6875\n" +
-            "-16.534407537098268, -24.229831410789895, 1001647.5625\n" +
-            "-50.77857351650165, -21.549047048357007, 1004711.5\n" +
-            "-85.08635075519265, -17.090364444969797, 1003048.75\n" +
-            "-60.517525103063974, 162.90294868614723, 990519.875\n" +
-            "-26.05750294777339, 165.64964095897614, 975491.75\n" +
-            "8.428360374468292, 168.27582137408936, 972896.875\n" +
-            "42.88244111895462, 170.9288990741541, 986563.125\n" +
-            "77.25995117397686, 174.0908668485198, 1004145.5\n" +
-            "68.4453871444003, -4.706553583461556, 1011181.8125\n" +
-            "34.216867420838135, -1.8526444161363536, 1006741.9375\n" +
-            "0.011683678071778173, 0.7815427949531223, 1001665.0\n" +
-            "-34.211293986475404, 3.415779738357492, 1003026.3125\n" +
-            "-68.48710593985075, 6.270729228870652, 1005051.25\n" +
-            "-77.15773739304763, -172.52087956590066, 997705.9375\n" +
-            "-42.72759731537584, -169.36478575422117, 982056.4375\n" +
-            "-8.247442323732995, -166.71206322399328, 971963.4375\n" +
-            "26.228561620441774, -164.08578718623167, 978483.0625\n" +
-            "60.64634930099959, -161.33804306427058, 996326.75\n" +
-            "85.0170994671979, 18.684014917968437, 1009609.875\n" +
-            "50.76515560987716, 23.11231854747472, 1009771.0\n" +
-            "16.553906019631363, 25.7929236174419, 1003453.625\n" +
-            "-17.655957042212922, 28.415055437924597, 1001589.9375\n" +
-            "-51.90308220107421, 31.101252725274723, 1004654.875\n" +
-            "-86.21359834562239, 36.20331865790962, 1002687.625\n" +
-            "-59.3857764179712, -144.44139815208797, 989927.5\n" +
-            "-24.923939139908686, -141.70493750263572, 975168.6875\n" +
-            "9.561179691713466, -139.0795084083312, 973219.4375\n" +
-            "44.01215782276931, -136.42322051935656, 987312.8125\n" +
-            "78.38538876427654, -133.1853010414203, 1004723.75\n" +
-            "67.32341246000982, 47.96023938946846, 1011251.1875\n" +
-            "33.09662760449683, 50.793514555311056, 1006512.375\n" +
-            "-1.1089409759068076, 53.426077782203656, 1001520.0\n" +
-            "-35.33418733130925, 56.06209366972169, 1003010.9375\n" +
-            "-69.61347926606672, 58.94045491427554, 1004861.75\n" +
-            "-76.02765527411233, -119.81109396724001, 997183.0\n" +
-            "-41.59467383774582, -116.71716853738597, 981534.0\n" +
-            "-7.1139954828578285, -114.06741713944703, 971961.9375\n" +
-            "27.359931230035613, -111.44026683747167, 979091.9375\n" +
-            "61.77384277823944, -108.6812597335692, 997060.375\n" +
-            "83.89425734878282, 71.7228602478201, 1009929.75\n" +
-            "49.64438986896977, 75.76214533050643, 1009632.6875\n" +
-            "15.43377377876949, 78.43775582464303, 1003231.3125\n" +
-            "-18.777520207705912, 81.05998839041598, 1001534.875\n" +
-            "-53.027655772443886, 83.75203914988481, 1004592.125\n" +
-            "-87.3400058227842, 90.04918669669142, 1002316.875\n" +
-            "-58.25402090268926, -91.7867116894618, 989338.375\n" +
-            "-23.79047778488153, -89.0596015689833, 974867.25\n" +
-            "10.693777027810611, -86.43481451246076, 973565.5625\n" +
-            "45.14157741335511, -83.77507054776609, 988067.25\n" +
-            "79.51049850549606, -80.44396679898337, 1005286.0\n" +
-            "66.20166317186195, 100.6247032678915, 1011301.6875\n" +
-            "31.97651073156059, 103.43954033806965, 1006276.4375\n" +
-            "-2.229540657840004, 106.07061799881777, 1001378.125\n" +
-            "-36.457128487467294, 108.70856682987092, 1002994.25\n" +
-            "-70.73991406398522, 111.61340530274232, 1004662.5625\n" +
-            "-74.89751851366368, -67.11142387874014, 996655.125\n" +
-            "-40.46179817144, -64.06979037717171, 981025.125\n" +
-            "-5.98071640850415, -61.42279154546829, 971986.0625\n" +
-            "28.491031047157232, -58.79465769625245, 979716.375\n" +
-            "62.901035727155815, -56.023267459384755, 997786.6875\n" +
-            "82.77147670207027, 124.63838480465988, 1010229.3125\n" +
-            "48.5238017129808, 128.41155888709335, 1009481.0625\n" +
-            "14.313711547346609, 131.08254534316185, 1003009.0625\n" +
-            "-19.899102156219122, 133.7049828146099, 1001482.3125\n" +
-            "-54.15229764570526, 136.40335832925015, 1004523.125\n" +
-            "-88.46358560162965, 145.65917989996623, 1001936.6875\n" +
-            "-57.122261972312735, -39.132875585387296, 988753.1875\n" +
-            "-22.657124005333806, -36.41433735231716, 974587.75\n" +
-            "11.826148967665148, -33.79008988073905, 973934.9375\n" +
-            "46.27069989071201, -31.126623462946732, 988825.5625\n" +
-            "80.63527356744625, -27.678819102005168, 1005831.6875\n" +
-            "65.08013244976752, 153.28716248579315, 1011333.375\n" +
-            "30.856516802029407, 156.085436347234, 1006034.6875\n" +
-            "-3.3501207029793365, 158.7151548003373, 1001239.5\n" +
-            "-37.58011745494952, 161.35520049946564, 1002976.125\n" +
-            "-71.8664239939846, 164.29018742733348, 1004453.6875\n" +
-            "-73.76732711170168, -14.419772432325859, 996122.9375\n" +
-            "-39.32897714664754, -11.422623099048089, 980530.4375\n" +
-            "-4.8476097964270135, -8.778178758094251, 972035.75\n" +
-            "29.621857656712056, -6.148947809742972, 980355.6875\n" +
-            "64.02791448737037, -3.3639127759042964, 998504.75\n" +
-            "81.64884631951946, 177.48034822413862, 1010508.5\n" +
-            "47.40338431172108, -178.93938591388007, 1009316.5625\n" +
-            "13.19371505649449, -176.27268881661033, 1002787.1875\n" +
-            "-21.02070630284713, -173.64996447721714, 1001432.125\n" +
-            "-55.27701123595292, -170.94474511302852, 1004447.6875\n" +
-            "-89.56146337862833, -143.39383837870477, 1001547.3125\n" +
-            "-55.99050304193621, 13.520189561084637, 988172.625\n" +
-            "-21.523886339001972, 16.23085002472081, 974330.6875\n" +
-            "12.958289534861551, 18.854660364192036, 974327.0\n" +
-            "47.39952183974543, 21.522141225669035, 989586.8125\n" +
-            "81.75970711993794, 25.11986823889238, 1006360.3125\n" +
-            "63.95882029372652, -154.05213001245622, 1011346.5625\n" +
-            "29.73663898571412, -151.26877328416268, 1005787.5\n" +
-            "-4.470684099532567, -148.64028426510998, 1001104.3125\n" +
-            "-38.70316106394512, -145.99799826393388, 1002956.375\n" +
-            "-72.99299539568649, -143.02845057886577, 1004235.125\n" +
-            "-72.63708789841547, 38.2654381457011, 995586.9375\n" +
-            "-38.196210763368434, 41.22434439604232, 980050.5625\n" +
-            "-3.714680769268298, 43.86641866135416, 972111.0\n" +
-            "30.752411058700076, 46.496871359793225, 981009.0625\n" +
-            "65.15448588907228, 49.29699278740458, 999213.8125\n" +
-            "80.52640035207625, -129.72509988713517, 1010767.1875\n" +
-            "46.28313425009602, -126.290689527156, 1009139.625\n" +
-            "12.0737800373449, -123.62798126036155, 1002566.1875\n" +
-            "-22.142334355137237, -121.0048607699965, 1001384.1875\n" +
-            "-56.40178971299769, -118.29219649961257, 1004365.6875\n" +
-            "-89.24422158224874, 49.56733508984827, 1001149.0625\n" +
-            "-54.858754356843434, 66.17255973580852, 987597.4375\n" +
-            "-20.39076820098061, 68.87596909986708, 974096.375\n" +
-            "14.090196168078881, 71.49944476006898, 974741.375\n" +
-            "48.52803984536079, 74.17125083883789, 990350.125\n" +
-            "82.88376501202528, 77.96797541352956, 1006871.4375\n" +
-            "62.8377198735498, -101.39295611554536, 1011341.5\n" +
-            "28.61687215997284, -98.62309584105175, 1005535.375\n" +
-            "-5.5912359701415735, -95.99572014283378, 1000972.625\n" +
-            "-39.82625931445407, -93.3509889339348, 1002934.6875\n" +
-            "-74.1196350992801, -90.34150513278964, 1004006.9375\n" +
-            "-71.50681453418342, 90.94538264787796, 995047.6875\n" +
-            "-37.06350585179186, 93.87112149960961, 979586.125\n" +
-            "-2.581934876556703, 96.51100327419788, 972211.6875\n" +
-            "31.882684422932126, 99.14281176518719, 981675.6875\n" +
-            "66.28074993226153, 101.95967057135967, 999913.1875\n" +
-            "79.40415929030813, -76.96285843564881, 1011005.3125\n" +
-            "45.163044697916455, -73.64229366875541, 1008950.6875</coordinates>\n" +
-            "        <extrude>0</extrude>\n" +
-            "        <altitudeMode>relativeToGround</altitudeMode>" +
-
-            "</LineString>" +
+            "            <styleUrl>#satellite1</styleUrl>\n" +
+            "            <LineString>\n" +
+            "                <extrude>1</extrude>\n" +
+            "                <tessellate>1</tessellate>\n" +
+            "                <altitudeMode>absolute</altitudeMode>\n" +
+            "                <coordinates>%satellite1Coordinates%</coordinates>\n" +
+            "            </LineString>\n" +
+            "        </Placemark>\n" +
+            "        \n" +
+            "        <Placemark>\n" +
+            "            <name>Satellite 2</name>\n" +
+            "            <styleUrl>#satellite2</styleUrl>\n" +
+            "            <LineString>\n" +
+            "                <extrude>1</extrude>\n" +
+            "                <tessellate>1</tessellate>\n" +
+            "                <altitudeMode>absolute</altitudeMode>\n" +
+            "                <coordinates>%satellite2Coordinates%</coordinates>\n" +
+            "            </LineString>\n" +
             "        </Placemark>\n" +
             "    </Document>\n" +
             "</kml>"
 
-//    val kmlTemplate = "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
-//            "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
-//            " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
-//            "    <Document>\n" +
-//            "        <name>Satellite Trajectories</name>\n" +
-//            "        \n" +
-//            " <open>1</open>\n" +
-//            "        <Style id=\"satellite1\">\n" +
-//            "            <LineStyle>\n" +
-//            "                <color>ff0000ff</color>\n" +
-//            "                <width>2</width>\n" +
-//            "            </LineStyle>\n" +
-//            "        </Style>\n" +
-//            "        \n" +
-//            "        <Style id=\"satellite2\">\n" +
-//            "            <LineStyle>\n" +
-//            "                <color>ff00ff00</color>\n" +
-//            "                <width>2</width>\n" +
-//            "            </LineStyle>\n" +
-//            "        </Style>\n" +
-//            "        \n" +
-//            "        <Placemark>\n" +
-//            "            <name>Satellite 1</name>\n" +
-//            "            <styleUrl>#satellite1</styleUrl>\n" +
-//            "            <LineString>\n" +
-//            "                <extrude>1</extrude>\n" +
-//            "                <tessellate>1</tessellate>\n" +
-//            "                <altitudeMode>relativeToGround</altitudeMode>\n" +
-//            "                <coordinates>%satellite1Coordinates%</coordinates>\n" +
-//            "            </LineString>\n" +
-//            "        </Placemark>\n" +
-//            "        \n" +
-//            "        <Placemark>\n" +
-//            "            <name>Satellite 2</name>\n" +
-//            "            <styleUrl>#satellite2</styleUrl>\n" +
-//            "            <LineString>\n" +
-//            "                <extrude>1</extrude>\n" +
-//            "                <tessellate>1</tessellate>\n" +
-//            "                <altitudeMode>relativeToGround</altitudeMode>\n" +
-//            "                <coordinates>%satellite2Coordinates%</coordinates>\n" +
-//            "            </LineString>\n" +
-//            "        </Placemark>\n" +
-//            "        \n" +
-//            "    </Document>\n" +
-//            "</kml>"
-//
-//    val satellite1Coordinates = "2.3522,48.8566,200\n" +
-//            "-0.1276,51.5074,400\n" +
-//            "12.4964,41.9028,600\n" +
-//            "4.8952,52.3702,800\n" +
-//            "16.3738,48.2082,1000\n" +
-//            "9.7416,52.3759,1200\n" +
-//            "17.0385,51.1079,1400\n" +
-//            "21.0122,52.2297,1600\n" +
-//            "4.3517,50.8503,1800\n" +
-//            "6.9603,50.9375,2000"
-//
-//    val satellite2Coordinates = "2.3522,48.8566,200\n" +
-//            "-0.1276,51.5074,400\n" +
-//            "12.4964,41.9028,600\n" +
-//            "4.8952,52.3702,800\n" +
-//            "16.3738,48.2082,1000\n" +
-//            "9.7416,52.3759,1200\n" +
-//            "17.0385,51.1079,1400\n" +
-//            "21.0122,52.2297,1600\n" +
-//            "4.3517,50.8503,1800\n" +
-//            "6.9603,50.9375,2000"
+    val satellite1Coordinates = callToServer.getCoordinates(sat1)
 
-    return kmlTemplate
+    val satellite2Coordinates = callToServer.getCoordinates(sat2)
+
+    val sat1 = satellite1Coordinates.split("\n")
+    val sat2 = satellite2Coordinates.split("\n")
+    var closestDistance = Double.MAX_VALUE
+    var midpointX = 0.0
+    var midpointY = 0.0
+    var finalX = Double.MAX_VALUE
+    var finalY = Double.MAX_VALUE
+    for (pos1 in sat1) {
+        for (pos2 in sat2) {
+            val positions1 = pos1.split(",")
+            val positions2 = pos2.split(",")
+
+
+            val x1 = positions1[0].toDouble()
+            val y1 = positions1[1].toDouble()
+            val x2 = positions2[0].toDouble()
+            val y2 = positions2[1].toDouble()
+
+            val distance = sqrt((x2 - x1).pow(2) + (y2 - y1).pow(2))
+
+            midpointX = (x1 + x2) / 2
+            midpointY = (y1 + y2) / 2
+
+            if (distance < closestDistance) {
+                closestDistance = distance
+                finalX = midpointX
+                finalY = midpointY
+
+            }
+        }
+    }
+
+    SSHConnection.flyto("${finalX},${finalY},0")
+    val circleCoordinates = generateCircleCoordinates(finalX, finalY)
+
+    SSHConnection.printCollision(circleCoordinates)
+
+
+    getTour(satellite1Coordinates)
+
+    return kmlTemplate.replace("%satellite1Coordinates%", satellite1Coordinates.replace(" ", ""))
+        .replace("%satellite2Coordinates%", satellite2Coordinates.replace(" ", ""))
 }
+
+fun getTour(coords: String) {
+    val coords = coords.split("\n")
+    val coord = coords[0].split(",")
+    val alt = coord[2].toDouble() + 500000
+    var kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n" +
+            "  <Document>\n" +
+            "    <name>Tour</name>\n" +
+            "    <open>1</open>\n" +
+            "    <Folder>\n" +
+            "    <gx:Tour>\n" +
+            "      <name>Satellitetour</name>\n" +
+            "      <gx:Playlist>\n" +
+            "<gx:FlyTo>\n" +
+            "    <gx:duration>2</gx:duration>\n" +
+            "    <gx:flyToMode>smooth</gx:flyToMode>\n" +
+            "     <LookAt>\n" +
+            "      <longitude>${coord[0]}</longitude>\n" +
+            "      <latitude>${coord[1]}</latitude>\n" +
+            "      <altitude>${alt}</altitude>\n" +
+            "      <heading>0</heading>\n" +
+            "      <tilt>30</tilt>\n" +
+            "      <range>10000000</range>\n" +
+            "      <gx:altitudeMode>absolute</gx:altitudeMode>\n" +
+            "      </LookAt>\n" +
+            "    </gx:FlyTo>\n"
+
+
+    for (coord in coords) {
+        val coord = coord.split(",")
+        val alt = coord[2].toDouble() + 500000
+
+        kml = kml + "<gx:FlyTo>\n" +
+                "    <gx:duration>0.5</gx:duration>\n" +
+                "    <gx:flyToMode>smooth</gx:flyToMode>\n" +
+                "     <LookAt>\n" +
+                "      <longitude>${coord[0]}</longitude>\n" +
+                "      <latitude>${coord[1]}</latitude>\n" +
+                "      <altitude>${alt}</altitude>\n" +
+                "      <heading>0</heading>\n" +
+                "      <tilt>30</tilt>\n" +
+                "      <range>10000000</range>\n" +
+                "      <gx:altitudeMode>absolute</gx:altitudeMode>\n" +
+                "      </LookAt>\n" +
+                "    </gx:FlyTo>\n"
+    }
+
+    kml = kml + " </gx:Playlist>\n" +
+            "    </gx:Tour>\n" +
+            " </Folder>\n" +
+            "  </Document>\n" +
+            "</kml>"
+
+    val command = "chmod 777 /var/www/html/tourSat.kml; echo '${kml}' > /var/www/html/tourSat.kml"
+    SSHConnection.executeCommand(command)
+    val command2 = "chmod 777 /var/www/html/kmls.txt; echo '" +
+            "http://lg1:81/tourSat.kml" +
+            "' >> /var/www/html/kmls.txt"
+    SSHConnection.executeCommand(command2)
+}
+
+fun generateCircleCoordinates(
+    centerX: Double,
+    centerY: Double,
+): String {
+    val radius = 10
+    val numPoints = 250
+    val coordinates = StringBuilder()
+    for (i in 0 until numPoints) {
+        val angle = 2 * PI * i / numPoints.toDouble()
+        val x = centerX + radius * cos(angle)
+        val y = centerY + radius * sin(angle)
+        coordinates.append("$x,$y,0.0\n")
+    }
+    val angle = 2 * PI * 0 / numPoints.toDouble()
+    coordinates.append("${centerX + radius * cos(angle)},${centerY + radius * sin(angle)},0.0\n")
+    return coordinates.toString()
+}
+

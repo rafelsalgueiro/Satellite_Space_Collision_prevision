@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -16,17 +18,17 @@
         android:theme="@style/Theme.Satellite_Space_Collision_prevision"
         tools:targetApi="tiramisu">
         <activity
-            android:name=".SplashScreen"
+            android:name="sscp.satellite_space_collision_prevision.SplashScreen"
             android:exported="true"
             android:screenOrientation="landscape"
             android:label="@string/title_activity_splash_screen">
         </activity>
         <activity
-            android:name=".Configuration"
+            android:name="sscp.satellite_space_collision_prevision.Configuration"
             android:label="@string/configuration_label"
             android:screenOrientation="landscape" />
         <activity
-            android:name=".MainActivity"
+            android:name="sscp.satellite_space_collision_prevision.MainActivity"
             android:exported="true"
             android:screenOrientation="landscape">
             <intent-filter>
