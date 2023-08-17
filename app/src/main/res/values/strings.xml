@@ -29,4 +29,7 @@
     <string name="hide_logos">Hide logos</string>
     <string name="logos">logos</string>
     <string name="title_activity_splash_screen">SplashScreen</string>
+    <string name="commands">Commands</string>
+    <string name="relaunch">relaunch</string>
+    <string name="server">Server</string>
 </resources>
