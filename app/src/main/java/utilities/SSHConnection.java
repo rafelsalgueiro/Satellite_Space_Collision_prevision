@@ -251,13 +251,13 @@ public class SSHConnection {
         thread.start();
     }
 
-    public static void testingPrintingSats() {
+    public static void testingPrintingSats(String sat1, String sat2) {
         Thread thread = new Thread(() -> {
             try {
                 String command = null;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     command = "chmod 777 /var/www/html/satellites.kml; echo '" +
-                            createKMLFile1("TIANZHOU-6", "CALSPHERE 1") +
+                            createKMLFile1(sat1, sat2) +
                             "' > /var/www/html/satellites.kml";
                 }
                 executeCommand(command);
@@ -275,13 +275,13 @@ public class SSHConnection {
     public static void printSatInfo(String data, String collision) {
         Thread thread = new Thread(() -> {
             try {
-                String[] dataSection = data.split(",");
-                String sat1 = dataSection[0].replace("?", "").replace("[", "").replace("]", "");
-                String tle11 = dataSection[1].replace("?", "").replace("[", "").replace("]", "");
-                String tle12 = dataSection[2].replace("?", "").replace("[", "").replace("]", "");
-                String sat2 = dataSection[3].replace("?", "").replace("[", "").replace("]", "");
-                String tle21 = dataSection[4].replace("?", "").replace("[", "").replace("]", "");
-                String tle22 = dataSection[5].replace("?", "").replace("[", "").replace("]", "");
+                String[] dataSection = data.replace("[","").replace("]", "").split(",");
+                String sat1 = dataSection[0];
+                String satellite_id1 = dataSection[1];
+                String classification_type1 = dataSection[2];
+                String sat2 = dataSection[4];
+                String satellite_id2 = dataSection[5];
+                String classification_type2 = dataSection[6];
                 String command = "chmod 777 /var/www/html/kml/" + infoSlave + ".kml; echo '" +
                         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n" +
@@ -302,15 +302,15 @@ public class SSHConnection {
                         " <tr>\n" +
                         "   <td colspan=\"2\" align=\"center\">\n" +
                         "     <h2>%sat1%</font></h2>\n" +
-                        "     <h3>TLE 1: %tle11%</font></h3>\n" +
-                        "     <h3>TLE 1: %tle12%</font></h3>\n" +
+                        "     <h3>    %tle11%</font></h3>\n" +
+                        "     <h3>    %tle12%</font></h3>\n" +
                         "   </td>\n" +
                         " </tr>\n" +
                         " <tr>\n" +
                         "   <td colspan=\"2\" align=\"center\">\n" +
                         "     <h2>%sat2%</font></h2>\n" +
-                        "     <h3>TLE 1: %tle21%</font></h3>\n" +
-                        "     <h3>TLE 1: %tle22%</font></h3>\n" +
+                        "     <h3>    %tle21%</font></h3>\n" +
+                        "     <h3>    %tle22%</font></h3>\n" +
                         "   </td>\n" +
                         " </tr>\n" +
                         " <tr>\n" +
@@ -334,7 +334,7 @@ public class SSHConnection {
                         "</Document>\n" +
                         "</kml>\n' > /var/www/html/kml/" + infoSlave + ".kml";
 
-                String kmlContent = command.replace("%sat1%", "sat1").replace("%tle11%", "tle11").replace("%tle12%", "tle12").replace("%sat2%", "sat2").replace("%tle21%", "tle21").replace("%tle22%", "tle22").replace("%collision%", collision);
+                String kmlContent = command.replace("%sat1%", sat1).replace("%tle11%", satellite_id1).replace("%tle12%", classification_type1).replace("%sat2%", sat2).replace("%tle21%", satellite_id2).replace("%tle22%", classification_type2).replace("%collision%", collision);
                 executeCommand(kmlContent);
 
 
@@ -359,8 +359,8 @@ public class SSHConnection {
                         "            </LineStyle>\n" +
                         "\n" +
                         "            <PolyStyle>\n" +
-                        "                <color>640000ff</color>\n" +
-                        "                <altitudeMode>relativeToGround</altitudeMode>\n" +
+                        "                <color>000000ff</color>\n" +
+                        "                <altitudeMode>absolute</altitudeMode>\n" +
                         "                <colorMode>normal</colorMode>\n" +
                         "                <fill>1</fill>\n" +
                         "                <outline>1</outline>\n" +
@@ -371,7 +371,9 @@ public class SSHConnection {
                         "      <name>Collision</name>\n" +
                         "      <styleUrl>style_dfym</styleUrl>\n" +
                         "            <Polygon id=\"Path\">\n" +
+                        "<altitudeMode>absolute</altitudeMode>\n" +
                         "        <extrude>0</extrude>\n" +
+                        "<tessellate>true</tessellate>\n" +
                         "        <outerBoundaryIs>\n" +
                         "          <LinearRing>\n" +
                         "            <coordinates>\n" +
