@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="sscp.satellite_space_collision_prevision.MainActivity">
 
     <ImageButton
         android:id="@+id/playButton"
@@ -28,7 +28,7 @@
         android:contentDescription="@string/back"
         app:layout_constraintEnd_toStartOf="@+id/playButton"
         app:layout_constraintHorizontal_bias="0.007"
-        app:layout_constraintStart_toEndOf="@+id/recyclerView"
+        app:layout_constraintStart_toEndOf="@+id/satInfo"
         app:layout_constraintTop_toBottomOf="@+id/selectSat2"
         app:srcCompat="@android:drawable/ic_media_previous" />
 
@@ -96,7 +96,7 @@
         app:srcCompat="@android:drawable/ic_media_next" />
 
     <TextView
-        android:id="@+id/probabilityButton"
+        android:id="@+id/probabilityText"
         android:layout_width="247dp"
         android:layout_height="58dp"
         android:layout_marginStart="44dp"
@@ -106,19 +106,19 @@
         android:textSize="28sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+        app:layout_constraintTop_toBottomOf="@+id/satInfo" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <TextView
+        android:id="@+id/satInfo"
         android:layout_width="249dp"
         android:layout_height="255dp"
         android:layout_marginStart="39dp"
         android:layout_marginTop="33dp"
         android:layout_marginBottom="20dp"
         android:scrollbarSize="6sp"
-        app:layout_constraintBottom_toTopOf="@+id/probabilityButton"
+        app:layout_constraintBottom_toTopOf="@+id/probabilityText"
         app:layout_constraintEnd_toStartOf="@+id/seekBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkCollisionButton"
@@ -133,7 +133,7 @@
         android:layout_marginBottom="70dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/recyclerView" />
+        app:layout_constraintStart_toEndOf="@+id/satInfo" />
 
     <Spinner
         android:id="@+id/selectSat1"
@@ -153,7 +153,7 @@
         android:layout_marginTop="30dp"
         android:text="@string/check_collision"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+        app:layout_constraintBottom_toTopOf="@+id/satInfo"
         app:layout_constraintEnd_toStartOf="@+id/visualitzationText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/selectSat1" />
