@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -20,7 +21,7 @@ public class callToServer extends Thread {
     private static Context context;
 
     public callToServer(Context context, AtomicReference<String> resultRef) {
-        this.context = context;
+        callToServer.context = context;
         callToServer.resultRef = resultRef;
     }
 
@@ -69,7 +70,7 @@ public class callToServer extends Thread {
         try {
             AtomicReference<String> resultRef = new AtomicReference<>();
 
-            Thread thread = new callToServer(null, resultRef);
+            Thread thread = new callToServer(context, resultRef);
             thread.start();
             thread.join();
             if (resultRef.get().equals("null")) {
@@ -85,7 +86,7 @@ public class callToServer extends Thread {
     }
 
     public static String getCoordinates(String sat) {
-        final String[] coordinates = new String[1];
+        AtomicReference<String> coordinates = new AtomicReference<>();
                 Thread thread = new Thread(() -> {
                     try {
                 String[] lines = getTLEData(sat);
@@ -104,23 +105,21 @@ public class callToServer extends Thread {
                 wr.close();
 
                 con.connect();
-                System.out.println("Response Code: " + con.getResponseCode());
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
                 String response1 = in.readLine();
                 in.close();
-
-                System.out.println(response1);
+                coordinates.set(response1);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         thread.start();
-        return coordinates[0];
+        return coordinates.get();
     }
 
     public static String[] getTLEData(String satelliteName) throws IOException {
-        java.io.FileInputStream fis = context.openFileInput("tleSat.txt");
+        FileInputStream fis = context.openFileInput("tleSat.txt");
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
         String line;
         List<String> lines = new ArrayList<>();
@@ -143,7 +142,6 @@ public class callToServer extends Thread {
         if (indexOfSatellite == -1) {
             return new String[0];
         }
-        String[] satelliteData = lines.subList(indexOfSatellite, indexOfSatellite + 3).toString().split(",");
-        return satelliteData;
+        return lines.subList(indexOfSatellite, indexOfSatellite + 3).toString().split(",");
     }
 }
