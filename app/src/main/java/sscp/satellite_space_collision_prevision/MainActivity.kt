@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.Window
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -15,12 +16,9 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.satellite_space_collision_prevision.databinding.ActivityMainBinding
 import com.opencsv.CSVReader
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import utilities.SSHConnection
@@ -36,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     var mainActivityObserver: MainActivityObserver? = null
-    val viewModel: SplashScreen = SplashScreen()
     lateinit var configurationButton: ImageButton
     lateinit var checkCollisionButton: Button
     lateinit var satellitesSpinner1: Spinner
@@ -49,22 +46,23 @@ class MainActivity : AppCompatActivity() {
     var isPlaying = false
     lateinit var returnedData: String
     private val resultRef = AtomicReference("False")
+    private var isDataDownloaded = false
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen().apply {
-            setKeepOnScreenCondition {
-                viewModel.isLoading.value
-            }
-        }
         super.onCreate(savedInstanceState)
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(binding.root)
 
-        CoroutineScope(Dispatchers.Default).launch {
-            downloadSatelliteData(applicationContext)
-        }
+        callToServer(applicationContext, resultRef)
 
-        callToServer(this@MainActivity, resultRef)
+//        if (!isDataDownloaded) {
+//            CoroutineScope(Dispatchers.Default).launch {
+//                downloadSatelliteData(applicationContext);
+//            }
+//            isDataDownloaded = true
+//        }
+
 
         configurationButton = binding.configurationButton
         checkCollisionButton = binding.checkCollisionButton
@@ -73,8 +71,9 @@ class MainActivity : AppCompatActivity() {
         infoInLayout = binding.satInfo
         collisionInfo = binding.probabilityText
         playButton = binding.playButton
-        val satelliteData = readSatelliteDataName(this, "satellite_data.csv")
-        val spinnerAdapter = ArrayAdapter(this, R.layout.simple_spinner_item, satelliteData)
+        val satelliteData = readSatelliteDataName(applicationContext, "satellite_data.csv")
+        val spinnerAdapter =
+            ArrayAdapter(applicationContext, R.layout.simple_spinner_item, satelliteData)
         spinnerAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
 
         satellitesSpinner1.adapter = spinnerAdapter
@@ -138,13 +137,16 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun checkCollisionButtonClicked() {
         readAllLineSat()
-        infoInLayout.text = dataList.toString()
+        infoInLayout.text = dataList.toString().replace(",", "").replace("[", "").replace("]", "")
 //        returnedData = callToServer.sendPostRequest()
 //        collisionInfo.text = "Collision: $returnedData"
-        //if (SSHConnection.isConnected()) {
-        //SSHConnection.printSatInfo(dataList.toString(), "returnedData")
-        SSHConnection.testingPrintingSats()
-        //}
+        if (SSHConnection.isConnected()) {
+            SSHConnection.printSatInfo(dataList.toString(), "returnedData")
+            SSHConnection.testingPrintingSats(
+                satellitesSpinner1.selectedItem.toString(),
+                satellitesSpinner2.selectedItem.toString()
+            )
+        }
     }
 
     private fun readAllLineSat() {
@@ -152,19 +154,21 @@ class MainActivity : AppCompatActivity() {
         val sat2 = satellitesSpinner2.selectedItem.toString()
         val data: MutableList<String> = ArrayList()
         try {
-            val inputStream = InputStreamReader(assets.open("tleSat.csv"))
-            val reader = CSVReader(inputStream)
+            val fis = applicationContext.openFileInput("satellite_data.csv")
+            val reader = CSVReader(InputStreamReader(fis))
             var nextLine: Array<String>?
             reader.readNext()
             while (reader.readNext().also { nextLine = it } != null) {
                 if (nextLine?.isNotEmpty() == true) {
                     if (nextLine!![0] == sat1 || nextLine!![0] == sat2) {
-                        data.add(nextLine!![0])
-                        data.add(nextLine!![1])
-                        data.add(nextLine!![2])
+                        data.add("Satellite name: " + nextLine!![0] + "\n")
+                        data.add("   Satellite id: " + nextLine!![1] + "\n")
+                        data.add("   Classification type: " + nextLine!![10] + "\n")
+                        data.add("\n")
                     }
                 }
             }
+
             reader.close()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -210,7 +214,6 @@ class MainActivity : AppCompatActivity() {
         val tleData = response2.body()
 
         val storageDir = context.filesDir
-        println(storageDir)
         if (storageDir != null && storageDir.exists()) {
 
             val csvFile = File(storageDir, "satellite_data.csv")
@@ -225,5 +228,6 @@ class MainActivity : AppCompatActivity() {
                 outputStream2.close()
             }
         }
+        callToServer(applicationContext, resultRef)
     }
 }

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.Window
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -34,7 +35,11 @@ class Configuration : AppCompatActivity(), MainActivityObserver {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(binding.root)
+
+
+
         val sharedPreferencies = getSharedPreferences("MyPrefs", MODE_MULTI_PROCESS)
         editor = sharedPreferencies.edit()
 
