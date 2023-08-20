@@ -3,11 +3,15 @@ package utilities;
 import static utilities.PrintingOrbitsOf2SatKt.createKMLFile1;
 
 import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Properties;
 
 public class SSHConnection {
@@ -214,6 +218,33 @@ public class SSHConnection {
         thread.start();
     }
 
+    public void relaunch() {
+        Thread thread = new Thread(() -> {
+            try {
+                String sentence = "/home/lg/bin/lg-relaunch > /home/lg/log.txt;\n " +
+                        "RELAUNCH_CMD=\"\\\n" +
+                        "if [ -f /etc/init/lxdm.conf ]; then\n" +
+                        "  export SERVICE=lxdm\n" +
+                        "elif [ -f /etc/init/lightdm.conf ]; then\n" +
+                        "  export SERVICE=lightdm\n" +
+                        "else\n" +
+                        "  exit 1\n" +
+                        "fi\n" +
+                        "if  [[ \\$(service \\$SERVICE status) =~ 'stop' ]]; then\n" +
+                        "  echo " + password + " | sudo -S service \\${SERVICE} start\n" +
+                        "else\n" +
+                        "  echo " + password + " | sudo -S service \\${SERVICE} restart\n" +
+                        "fi\n" +
+                        "\" && sshpass -p " + password + " ssh -x -t lg@lg1 \"$RELAUNCH_CMD\"";
+                executeCommand(sentence);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+
     public void disconnect() {
         if (session != null) {
             session.disconnect();
@@ -237,6 +268,36 @@ public class SSHConnection {
 
         channelssh.disconnect();
 
+    }
+
+    public static void sendFile(File file, String remotePath) {
+        if (session == null || !session.isConnected()) {
+            return;
+        }
+
+        ChannelSftp channelSftp = null;
+
+        try {
+            channelSftp = (ChannelSftp) session.openChannel("sftp");
+            channelSftp.connect();
+
+            try (FileInputStream fileInputStream = new FileInputStream(file);
+                 FileOutputStream outputStream = (FileOutputStream) channelSftp.put(remotePath)) {
+
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (channelSftp != null) {
+                channelSftp.disconnect();
+            }
+        }
     }
 
     public static void tour() {
@@ -299,6 +360,7 @@ public class SSHConnection {
                         "   <description><![CDATA[<!-- BalloonStyle background color:\n" +
                         "                ffffffff\n" +
                         "     -->" +
+                        "<table width=\"400\" height=\"300\" align=\"left\">" +
                         " <tr>\n" +
                         "   <td colspan=\"2\" align=\"center\">\n" +
                         "     <h2>%sat1%</font></h2>\n" +
@@ -315,7 +377,7 @@ public class SSHConnection {
                         " </tr>\n" +
                         " <tr>\n" +
                         "   <td colspan=\"2\" align=\"center\">\n" +
-                        "     <h2>Collision: %collision% </font></h2>\n" +
+                        "     <h1>Collision: %collision% </font></h1>\n" +
                         "</table>]]></description>\n" +
                         "   <LookAt>\n" +
                         "     <longitude>-17.841486</longitude>\n" +
