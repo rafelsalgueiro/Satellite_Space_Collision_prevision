@@ -36,6 +36,39 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Server"
         app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/detectionPort"
+        android:layout_width="269dp"
+        android:layout_height="79dp"
+        android:layout_marginTop="140dp"
+        android:layout_marginEnd="104dp"
+        android:ems="10"
+        android:hint="Detector of collision port"
+        android:inputType="text"
+        android:singleLine="true"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Server"
+        app:layout_constraintVertical_bias="0.251" />
+
+    <EditText
+        android:id="@+id/orbitsPort"
+        android:layout_width="269dp"
+        android:layout_height="79dp"
+        android:layout_marginTop="140dp"
+        android:layout_marginEnd="100dp"
+        android:ems="10"
+        android:hint="Orbits of satellites port"
+        android:inputType="text"
+        android:singleLine="true"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Server"
+        app:layout_constraintVertical_bias="0.511" />
+
     <View
         android:id="@+id/view"
         android:layout_width="321dp"
@@ -65,7 +98,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/status"
+        android:id="@+id/statusServer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="900dp"
@@ -77,7 +110,7 @@
         app:layout_constraintTop_toBottomOf="@+id/connectionText" />
 
     <Button
-        android:id="@+id/disconnectButton2"
+        android:id="@+id/DisconnectServerButton"
         style="@style/Widget.AppCompat.Button"
         android:layout_width="156dp"
         android:layout_height="70dp"
@@ -273,16 +306,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/connectButton"
+        android:id="@+id/ConnectServerButton"
         style="@style/Widget.AppCompat.Button"
         android:layout_width="143dp"
         android:layout_height="70dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="100dp"
         android:text="@string/connect"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/disconnectButton2" />
+        app:layout_constraintEnd_toStartOf="@+id/DisconnectServerButton" />
 
     <ImageButton
         android:id="@+id/returnMainPage"

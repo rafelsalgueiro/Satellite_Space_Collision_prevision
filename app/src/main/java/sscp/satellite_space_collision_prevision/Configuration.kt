@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Window
 import android.widget.Button
 import android.widget.EditText
@@ -17,6 +19,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import utilities.SSHConnection
+import utilities.callToServer.setter
+import java.io.IOException
+import java.net.UnknownHostException
+
 
 class Configuration : AppCompatActivity(), MainActivityObserver {
     private val binding by lazy { ConfigurationBinding.inflate(layoutInflater) }
@@ -31,6 +37,14 @@ class Configuration : AppCompatActivity(), MainActivityObserver {
     private lateinit var hideLogos: Button
     private lateinit var numSlaves: EditText
     private lateinit var editor: SharedPreferences.Editor
+    private lateinit var ipserver: EditText
+    private lateinit var relaunch: Button
+    private lateinit var collisionPort: EditText
+    private lateinit var coordinatesPort: EditText
+    private lateinit var connectServerButton: Button
+    private lateinit var disconnectServerButton: Button
+    private lateinit var serverStatus: TextView
+    private val handler = Handler(Looper.getMainLooper())
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +53,8 @@ class Configuration : AppCompatActivity(), MainActivityObserver {
         setContentView(binding.root)
 
 
-
-        val sharedPreferencies = getSharedPreferences("MyPrefs", MODE_MULTI_PROCESS)
+        val sharedPreferencies = getSharedPreferences("MyPrefs", MODE_PRIVATE)
         editor = sharedPreferencies.edit()
-
         // Initialize views
         ipAddressEditText = binding.IPAddress
         masterPasswordEditText = binding.MasterPassword
@@ -53,17 +65,32 @@ class Configuration : AppCompatActivity(), MainActivityObserver {
         showLogos = binding.showLogo
         hideLogos = binding.hideLogos
         numSlaves = binding.numberSlaves
+        ipserver = binding.IPAddressServer
+        relaunch = binding.relaunchButton
+        connectServerButton = binding.ConnectServerButton
+        disconnectServerButton = binding.DisconnectServerButton
+        serverStatus = binding.statusServer
+        collisionPort = binding.detectionPort
+        coordinatesPort = binding.orbitsPort
 
         if (sharedPreferencies.contains("ipAddress")) {
             ipAddressEditText.setText(sharedPreferencies.getString("ipAddress", ""))
             masterPasswordEditText.setText(sharedPreferencies.getString("masterPassword", ""))
             numSlaves.setText(sharedPreferencies.getInt("numSlaves", 0).toString())
-            statusTextView.text = sharedPreferencies.getString("status", "")
+            statusTextView.text = sharedPreferencies.getString("status", "Disconnected")
+            serverStatus.text = sharedPreferencies.getString("status", "Disconnected")
+            ipserver.setText(sharedPreferencies.getString("ipAddressServer", ""))
+            collisionPort.setText(sharedPreferencies.getString("collisionPort", ""))
+            coordinatesPort.setText(sharedPreferencies.getString("coordinatesPort", ""))
         } else {
             ipAddressEditText.text = null
             masterPasswordEditText.text = null
             numSlaves.text = null
+            ipserver.text = null
+            collisionPort.text = null
+            coordinatesPort.text = null
             statusTextView.text = "Status: Disconnected"
+            serverStatus.text = "Status: Disconnected"
         }
 
         // Set click listeners for buttons
@@ -75,13 +102,82 @@ class Configuration : AppCompatActivity(), MainActivityObserver {
         showLogos.setOnClickListener { onShowLogosClicked() }
         hideLogos.setOnClickListener { onHideLogosClicked() }
         connectButton.setOnClickListener { onConnectButtonClicked() }
+        relaunch.setOnClickListener { onRelaunchButtonClicked() }
 
+        connectServerButton.setOnClickListener { onConnectServerButtonClicked() }
+        disconnectServerButton.setOnClickListener { onDisconnectServerButtonClicked() }
+
+        disconnected()
+        handler.postDelayed({}, 1000)
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        connectButton.performClick()
+        connectServerButton.performClick()
+    }
+
+    private fun disconnected() {
+        serverStatus.text = "Status: Disconnected"
+        statusTextView.text = "Status: Disconnected"
+    }
+
+    private fun onDisconnectServerButtonClicked() {
+        serverStatus.text = "Status: Disconnected"
+    }
+
+    private fun onConnectServerButtonClicked() {
+        val serverIP = ipserver.text.toString()
+        val collisionPort = collisionPort.text.toString()
+        val orbitsPort = coordinatesPort.text.toString()
+        var status = ""
+        setter(serverIP, collisionPort, orbitsPort)
+        editor.apply {
+            putString("ipAddressServer", serverIP)
+            putString("collisionPort", collisionPort)
+            putString("coordinatesPort", orbitsPort)
+            apply()
+
+        }
+
+        if (pingHost(serverIP)) {
+            status = "Status: Connected"
+        } else {
+            status = "Status: Disconnected"
+        }
+        serverStatus.text = status
+
+    }
+
+    private fun pingHost(host: String): Boolean {
+        val runtime = Runtime.getRuntime()
+        try {
+            val ipProcess = runtime.exec("/system/bin/ping -c 1 $host")
+            val exitValue = ipProcess.waitFor()
+            ipProcess.destroy()
+            return exitValue == 0
+        } catch (e: UnknownHostException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+
+        return false
+    }
+
+    private fun onRelaunchButtonClicked() {
+        if (SSHConnection.isConnected()) {
+            sshConnection.relaunch()
+        }
+    }
+
     private fun onConnectButtonClicked() {
         val ipAddress = ipAddressEditText.text.toString()
         val masterPassword = masterPasswordEditText.text.toString()
-        val numSlaves = binding.numberSlaves.text.toString().toInt()
+        val numSlaves = numSlaves.text.toString().toInt()
         saveCredentials(ipAddress, masterPassword, numSlaves)
 
         CoroutineScope(Dispatchers.Main).launch {
@@ -89,7 +185,7 @@ class Configuration : AppCompatActivity(), MainActivityObserver {
             val isConnected = sshConnection.connect()
             if (isConnected) {
                 updateStatusTextView("Connected")
-                editor.apply{
+                editor.apply {
                     putString("ipAddress", ipAddress)
                     putString("masterPassword", masterPassword)
                     putInt("numSlaves", numSlaves)
@@ -126,7 +222,9 @@ class Configuration : AppCompatActivity(), MainActivityObserver {
     }
 
     private fun onDisconnectButtonClicked() {
-        sshConnection.disconnect()
+        if (SSHConnection.isConnected()) {
+            sshConnection.disconnect()
+        }
         updateStatusTextView("Disconnected")
     }
 
@@ -156,6 +254,9 @@ class Configuration : AppCompatActivity(), MainActivityObserver {
         editor.putString("ipAddress", ipAddress)
         editor.putString("masterPassword", masterPassword)
         editor.putInt("numSlaves", numSlaves)
+        editor.putString("ipserver", ipserver.text.toString())
+        editor.putString("collisionPort", collisionPort.text.toString())
+        editor.putString("coordinatesPort", coordinatesPort.text.toString())
         editor.apply()
     }
 
@@ -167,12 +268,17 @@ class Configuration : AppCompatActivity(), MainActivityObserver {
 
     override fun onDestroy() {
         updateStatusTextView("Disconnected")
-        sshConnection.disconnect()
-        editor.apply{
+        if (SSHConnection.isConnected()) {
+            sshConnection.disconnect()
+        }
+        editor.apply {
             putString("ipAddress", ipAddressEditText.text.toString())
             putString("masterPassword", masterPasswordEditText.text.toString())
             putInt("numSlaves", numSlaves.text.toString().toInt())
             putString("status", statusTextView.text.toString())
+            putString("ipAddressServer", ipserver.text.toString())
+            putString("collisionPort", collisionPort.text.toString())
+            putString("coordinatesPort", coordinatesPort.text.toString())
             apply()
         }
         super.onDestroy()
@@ -180,11 +286,14 @@ class Configuration : AppCompatActivity(), MainActivityObserver {
 
     override fun onMainActivityDestroyed() {
         updateStatusTextView("Disconnected")
-        sshConnection.disconnect()
+        if (SSHConnection.isConnected()) {
+            sshConnection.disconnect()
+        }
     }
 
 
 }
+
 interface MainActivityObserver {
     fun onMainActivityDestroyed()
 }
