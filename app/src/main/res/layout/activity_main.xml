@@ -6,170 +6,293 @@
     android:layout_height="match_parent"
     tools:context="sscp.satellite_space_collision_prevision.MainActivity">
 
-    <ImageButton
-        android:id="@+id/playButton"
-        android:layout_width="105dp"
-        android:layout_height="105dp"
-        android:layout_marginStart="141dp"
-        android:layout_marginTop="72dp"
-        android:layout_marginEnd="128dp"
-        android:contentDescription="@string/play"
-        app:layout_constraintEnd_toStartOf="@+id/nextButton"
-        app:layout_constraintStart_toEndOf="@+id/backButton"
-        app:layout_constraintTop_toBottomOf="@+id/visualitzationText"
-        app:srcCompat="@android:drawable/ic_media_play" />
+
+    <View
+        android:id="@+id/view5"
+        android:layout_width="483dp"
+        android:layout_height="600dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/view6"
+        android:layout_width="744dp"
+        android:layout_height="316dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded"
+        app:layout_constraintBottom_toTopOf="@+id/view7"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <View
+        android:id="@+id/view4"
+        android:layout_width="1292dp"
+        android:layout_height="177dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/rounded1"
+        app:layout_constraintBottom_toTopOf="@+id/view5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.666"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/view7"
+        android:layout_width="743dp"
+        android:layout_height="266dp"
+        android:layout_marginEnd="21dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/statusServer3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="121dp"
+        android:layout_marginEnd="607dp"
+        android:text="@string/status"
+        android:textSize="25sp"
+        app:emojiCompatEnabled="false"
+        app:layout_constraintEnd_toEndOf="@+id/view4"
+        app:layout_constraintTop_toTopOf="@+id/view4" />
+
+    <TextView
+        android:id="@+id/visualitzationText2"
+        android:layout_width="351dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="204dp"
+        android:layout_marginTop="50dp"
+        android:text="Visualitzation of multiple orbits"
+        android:textIsSelectable="true"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="@+id/view7"
+        app:layout_constraintTop_toTopOf="@+id/view7" />
 
     <ImageButton
         android:id="@+id/backButton"
         android:layout_width="105dp"
         android:layout_height="105dp"
-        android:layout_marginStart="209dp"
-        android:layout_marginTop="184dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginBottom="40dp"
         android:contentDescription="@string/back"
-        app:layout_constraintEnd_toStartOf="@+id/playButton"
-        app:layout_constraintHorizontal_bias="0.007"
-        app:layout_constraintStart_toEndOf="@+id/satInfo"
-        app:layout_constraintTop_toBottomOf="@+id/selectSat2"
+        app:layout_constraintBottom_toBottomOf="@+id/view6"
+        app:layout_constraintStart_toStartOf="@+id/view6"
         app:srcCompat="@android:drawable/ic_media_previous" />
-
-    <Spinner
-        android:id="@+id/selectSat2"
-        android:layout_width="267dp"
-        android:layout_height="78dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="51dp"
-        app:layout_constraintEnd_toStartOf="@+id/showAllOrbitsButton"
-        app:layout_constraintStart_toEndOf="@+id/selectSat1"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/visualitzationText"
-        android:layout_width="191dp"
-        android:layout_height="53dp"
-        android:layout_marginStart="418dp"
-        android:layout_marginTop="56dp"
-        android:layout_marginEnd="394dp"
-        android:text="@string/Display"
-        android:textIsSelectable="true"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/checkCollisionButton"
-        app:layout_constraintTop_toBottomOf="@+id/showAllOrbitsButton" />
-
-    <ImageButton
-        android:id="@+id/configurationButton"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginStart="1184dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="26dp"
-        android:contentDescription="@string/configuration"
-        android:src="@android:drawable/ic_menu_preferences"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@android:drawable/ic_menu_preferences" />
-
-    <ImageButton
-        android:id="@+id/syncButton"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="28dp"
-        android:contentDescription="@string/recharge_satellites"
-        android:src="@android:drawable/stat_notify_sync_noanim"
-        app:layout_constraintEnd_toStartOf="@+id/configurationButton"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@android:drawable/stat_notify_sync_noanim" />
 
     <ImageButton
         android:id="@+id/nextButton"
         android:layout_width="105dp"
         android:layout_height="105dp"
-        android:layout_marginTop="184dp"
-        android:layout_marginEnd="188dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="40dp"
         android:contentDescription="@string/next"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.6"
-        app:layout_constraintStart_toEndOf="@+id/playButton"
-        app:layout_constraintTop_toBottomOf="@+id/showAllOrbitsButton"
+        app:layout_constraintBottom_toBottomOf="@+id/view6"
+        app:layout_constraintEnd_toEndOf="@+id/view6"
         app:srcCompat="@android:drawable/ic_media_next" />
+
+    <ImageButton
+        android:id="@+id/playButton"
+        android:layout_width="105dp"
+        android:layout_height="105dp"
+        android:layout_marginEnd="316dp"
+        android:layout_marginBottom="40dp"
+        android:contentDescription="@string/play"
+        app:layout_constraintBottom_toBottomOf="@+id/view6"
+        app:layout_constraintEnd_toEndOf="@+id/view6"
+        app:srcCompat="@android:drawable/ic_media_play" />
+
+    <TextView
+        android:id="@+id/visualitzationText"
+        android:layout_width="151dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="284dp"
+        android:text="@string/Display"
+        android:textIsSelectable="true"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/view6"
+        app:layout_constraintTop_toTopOf="@+id/view6" />
+
+    <Spinner
+        android:id="@+id/selectSat2"
+        android:layout_width="218dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="65dp"
+        app:layout_constraintStart_toStartOf="@+id/view5"
+        app:layout_constraintTop_toTopOf="@+id/view5" />
+
+    <Spinner
+        android:id="@+id/selectSat1"
+        android:layout_width="218dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="65dp"
+        android:layout_marginEnd="13dp"
+        app:layout_constraintEnd_toEndOf="@+id/view5"
+        app:layout_constraintTop_toTopOf="@+id/view5" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="96dp"
+        android:layout_marginEnd="216dp"
+        app:layout_constraintEnd_toEndOf="@+id/view4"
+        app:layout_constraintTop_toTopOf="@+id/view4"
+        app:srcCompat="@android:drawable/ic_dialog_info" />
+
+    <ImageButton
+        android:id="@+id/syncButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="1100dp"
+        android:layout_marginTop="96dp"
+        android:contentDescription="@string/recharge_satellites"
+        android:src="@android:drawable/stat_notify_sync_noanim"
+        app:layout_constraintStart_toStartOf="@+id/view4"
+        app:layout_constraintTop_toTopOf="@+id/view4"
+        tools:src="@android:drawable/stat_notify_sync_noanim" />
+
+    <ImageButton
+        android:id="@+id/configurationButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="96dp"
+        android:layout_marginEnd="24dp"
+        android:contentDescription="@string/configuration"
+        android:src="@android:drawable/ic_menu_preferences"
+        app:layout_constraintEnd_toEndOf="@+id/view4"
+        app:layout_constraintTop_toTopOf="@+id/view4"
+        tools:src="@android:drawable/ic_menu_preferences" />
 
     <TextView
         android:id="@+id/probabilityText"
         android:layout_width="247dp"
         android:layout_height="58dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginEnd="989dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="192dp"
+        android:layout_marginBottom="20dp"
         android:text="@string/collision"
         android:textSize="28sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/satInfo" />
+        app:layout_constraintBottom_toBottomOf="@+id/view5"
+        app:layout_constraintEnd_toEndOf="@+id/view5" />
 
     <TextView
         android:id="@+id/satInfo"
-        android:layout_width="249dp"
-        android:layout_height="255dp"
-        android:layout_marginStart="39dp"
-        android:layout_marginTop="33dp"
-        android:layout_marginBottom="20dp"
-        android:scrollbarSize="6sp"
-        app:layout_constraintBottom_toTopOf="@+id/probabilityText"
-        app:layout_constraintEnd_toStartOf="@+id/seekBar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkCollisionButton"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="576dp"
-        android:layout_height="33dp"
-        android:layout_marginStart="200dp"
+        android:layout_width="252dp"
+        android:layout_height="216dp"
+        android:layout_marginTop="288dp"
         android:layout_marginEnd="188dp"
-        android:layout_marginBottom="70dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/satInfo" />
+        android:scrollbarSize="6sp"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/view5"
+        app:layout_constraintTop_toTopOf="@+id/view5" />
 
-    <Spinner
-        android:id="@+id/selectSat1"
-        android:layout_width="267dp"
-        android:layout_height="78dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="51dp"
-        app:layout_constraintEnd_toStartOf="@+id/selectSat2"
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="183dp"
+        android:layout_marginTop="123dp"
+        android:text="@string/status"
+        android:textSize="25sp"
+        app:emojiCompatEnabled="false"
+        app:layout_constraintStart_toStartOf="@+id/view4"
+        app:layout_constraintTop_toTopOf="@+id/view4" />
+
+    <TextView
+        android:id="@+id/server"
+        android:layout_width="72dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="521dp"
+        android:layout_marginTop="121dp"
+        android:text="@string/server"
+        android:textSize="25sp"
+        app:layout_constraintStart_toStartOf="@+id/view4"
+        app:layout_constraintTop_toTopOf="@+id/view4" />
+
+    <TextView
+        android:id="@+id/statusServer2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1756dp"
+        android:text="@string/status"
+        android:textSize="25sp"
+        app:emojiCompatEnabled="false"
+        app:layout_constraintBottom_toTopOf="@+id/numberSlaves"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/connectionText" />
+
+    <TextView
+        android:id="@+id/status2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="123dp"
+        android:text="@string/liquid_galaxy"
+        android:textSize="25sp"
+        app:emojiCompatEnabled="false"
+        app:layout_constraintStart_toStartOf="@+id/view4"
+        app:layout_constraintTop_toTopOf="@+id/view4" />
 
     <Button
         android:id="@+id/checkCollisionButton"
         android:layout_width="267dp"
         android:layout_height="78dp"
-        android:layout_marginStart="39dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="192dp"
+        android:layout_marginEnd="116dp"
         android:text="@string/check_collision"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/satInfo"
-        app:layout_constraintEnd_toStartOf="@+id/visualitzationText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectSat1" />
+        app:layout_constraintEnd_toEndOf="@+id/view5"
+        app:layout_constraintTop_toTopOf="@+id/view5" />
 
     <Button
-        android:id="@+id/showAllOrbitsButton"
-        android:layout_width="267dp"
-        android:layout_height="78dp"
-        android:layout_marginStart="199dp"
-        android:layout_marginTop="51dp"
-        android:layout_marginEnd="236dp"
-        android:text="@string/show_all_orbits"
+        android:id="@+id/allSatellites"
+        android:layout_width="114dp"
+        android:layout_height="73dp"
+        android:layout_marginEnd="88dp"
+        android:layout_marginBottom="48dp"
+        android:text="100%"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/visualitzationText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/selectSat2"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/view7"
+        app:layout_constraintEnd_toEndOf="@+id/view7" />
+
+    <Button
+        android:id="@+id/smallsatellites"
+        android:layout_width="114dp"
+        android:layout_height="73dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="48dp"
+        android:text="25%"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/view7"
+        app:layout_constraintStart_toStartOf="@+id/view7" />
+
+    <Button
+        android:id="@+id/halfSatellites"
+        android:layout_width="114dp"
+        android:layout_height="73dp"
+        android:layout_marginStart="216dp"
+        android:layout_marginBottom="48dp"
+        android:text="50%"
+        android:textSize="20sp"
+
+        app:layout_constraintBottom_toBottomOf="@+id/view7"
+        app:layout_constraintStart_toStartOf="@+id/view7" />
+
+    <Button
+        android:id="@+id/threeParts"
+        android:layout_width="114dp"
+        android:layout_height="73dp"
+        android:layout_marginEnd="252dp"
+        android:layout_marginBottom="48dp"
+        android:text="75%"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/view7"
+        app:layout_constraintEnd_toEndOf="@+id/view7" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

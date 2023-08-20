@@ -23,6 +23,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import utilities.SSHConnection
 import utilities.callToServer
+import utilities.orbitsOfSomeSat
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -138,10 +139,10 @@ class MainActivity : AppCompatActivity() {
     private fun checkCollisionButtonClicked() {
         readAllLineSat()
         infoInLayout.text = dataList.toString().replace(",", "").replace("[", "").replace("]", "")
-//        returnedData = callToServer.sendPostRequest()
-//        collisionInfo.text = "Collision: $returnedData"
+        returnedData = callToServer.sendPostRequest()
+        collisionInfo.text = "Collision: $returnedData"
         if (SSHConnection.isConnected()) {
-            SSHConnection.printSatInfo(dataList.toString(), "returnedData")
+            SSHConnection.printSatInfo(dataList.toString(), returnedData)
             SSHConnection.testingPrintingSats(
                 satellitesSpinner1.selectedItem.toString(),
                 satellitesSpinner2.selectedItem.toString()
@@ -229,5 +230,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
         callToServer(applicationContext, resultRef)
+    }
+
+    fun someSats(percentage: Int){
+        val fis = applicationContext.openFileInput("satellite_data.csv")
+        val reader = CSVReader(InputStreamReader(fis))
+        reader.readNext() // Skip header
+
+        val numRowsToRetrieve = reader.readAll().size / percentage
+        val selectedRows = reader.readAll().take(numRowsToRetrieve)
+
+        val satelliteNames = selectedRows.map { it[0] }.toTypedArray()
+        if (SSHConnection.isConnected()){
+            orbitsOfSomeSat(satelliteNames, applicationContext)
+        }
     }
 }

@@ -20,15 +20,24 @@ public class callToServer extends Thread {
     private static AtomicReference<String> resultRef = new AtomicReference<>("False");
     private static Context context;
 
+    public static String serverIP;
+    public static String predictionPort;
+    public static String coordinatesPort;
+
     public callToServer(Context context, AtomicReference<String> resultRef) {
         callToServer.context = context;
         callToServer.resultRef = resultRef;
+    }
+    public static void setter(String serverIP, String predictionPort, String coordinatesPort) {
+        callToServer.serverIP = serverIP;
+        callToServer.predictionPort = predictionPort;
+        callToServer.coordinatesPort = coordinatesPort;
     }
 
     @Override
     public void run() {
         try {
-            URL obj = new URL("http://192.168.1.115:8080/predict");
+            URL obj = new URL("http://"+serverIP+":"+predictionPort+"/predict");
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json");
@@ -93,12 +102,11 @@ public class callToServer extends Thread {
                 String line1 = lines[1];
                 String line2 = lines[2].replace("]", "");
 
-                URL obj = new URL("http://192.168.1.115:8081/calculate_coords");
+                URL obj = new URL("http://"+serverIP+":"+coordinatesPort+"/calculate_coords");
                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
                 con.setRequestMethod("POST");
                 con.setRequestProperty("Content-Type", "application/json");
                 con.setDoOutput(true);
-                System.out.println("{\"line1\":" + line1 + ",\"line2\":" + line2 + "}");
                 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
                 wr.writeBytes("{\"line1\":\"" + line1 + "\",\"line2\":\"" + line2 + "\"}");
                 wr.flush();
@@ -110,6 +118,7 @@ public class callToServer extends Thread {
                 String response1 = in.readLine();
                 in.close();
                 coordinates.set(response1);
+                System.out.println(coordinates.get());
             } catch (Exception e) {
                 e.printStackTrace();
             }
