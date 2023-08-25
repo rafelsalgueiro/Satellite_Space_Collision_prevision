@@ -20,7 +20,7 @@ To use this app you had to install 2 dockerfiles:
 
 <ul><p>docker pull rafelss/satellite_collision:1.0.0</p>
   <p>docker images ps</p>
-<p> docker run -p 8080:8080 "image id"</p>
+<p>docker run -p 8080:8080 "image id"</p>
   </ul>
   The numbers after -p are the ports that you had to put in the configuration menu of the application.
   Ex: docker run -p 8080:8080 "image id", in the application you had to write the port 8080.
@@ -30,6 +30,6 @@ To use this app you had to install 2 dockerfiles:
 
 <ul><p>docker pull rafelss/coordinates_rafelss:latest</p>
   <p>docker images ps</p>
-<p> sudo docker run -p 8081:8081 "image id"</p>
+<p>docker run -p 8081:8081 "image id"</p>
 
   </ul>
