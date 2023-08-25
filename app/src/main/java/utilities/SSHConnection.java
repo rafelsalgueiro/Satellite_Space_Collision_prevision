@@ -10,14 +10,12 @@ import com.jcraft.jsch.Session;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.Properties;
 
 public class SSHConnection {
     private final String ipAddress;
     private final String password;
-    private final int numSlaves;
+    private static int numSlaves;
     private String logoSlaves;
 
     private static String infoSlave;
@@ -28,7 +26,7 @@ public class SSHConnection {
     public SSHConnection(String ipAddress, String password, int numSlaves) {
         this.ipAddress = ipAddress;
         this.password = password;
-        this.numSlaves = numSlaves;
+        SSHConnection.numSlaves = numSlaves;
 
     }
 
@@ -45,7 +43,7 @@ public class SSHConnection {
         return (numSlaves / 2) + 2;
     }
 
-    public int rightScreen() {
+    public static int rightScreen() {
 
         if (numSlaves == 1) {
             return 1;
@@ -124,6 +122,28 @@ public class SSHConnection {
         thread.start();
     }
 
+    public static void cleanBaloon() {
+        Thread thread = new Thread(() -> {
+            try {
+                String slaves = "slave_" + rightScreen();
+                String command = "chmod 777 /var/www/html/kml/" + slaves + ".kml; echo '" +
+                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
+                        "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
+                        " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
+                        " <Document id=\"" + slaves + "\">\n " +
+                        " </Document> \n" +
+                        " </kml>\n' > /var/www/html/kml/" + slaves + ".kml";
+                executeCommand(command);
+
+                String command2 = "chmod 777 /var/www/html/kmls.txt; echo '' > /var/www/html/kmls.txt";
+                executeCommand(command2);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
     public void cleanKml() {
         Thread thread = new Thread(() -> {
             try {
@@ -152,7 +172,7 @@ public class SSHConnection {
         Thread thread = new Thread(() -> {
             try {
                 String[] pos = poi.split(",");
-                String command = "echo 'flytoview=<gx:duration>5</gx:duration><LookAt><longitude>"+pos[0]+"</longitude><latitude>"+pos[1]+"</latitude><altitude>25000000</altitude><heading>0</heading><tilt>0</tilt><range>1492.66</range><gx:altitudeMode>relativeToGround</gx:altitudeMode></LookAt>' > /tmp/query.txt";
+                String command = "echo 'flytoview=<gx:duration>5</gx:duration><LookAt><longitude>" + pos[0] + "</longitude><latitude>" + pos[1] + "</latitude><altitude>25000000</altitude><heading>0</heading><tilt>0</tilt><range>1492.66</range><gx:altitudeMode>relativeToGround</gx:altitudeMode></LookAt>' > /tmp/query.txt";
                 executeCommand(command);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -160,7 +180,6 @@ public class SSHConnection {
         });
         thread.start();
     }
-
 
     public void hideLogos() {
         Thread thread = new Thread(() -> {
@@ -257,6 +276,7 @@ public class SSHConnection {
             return;
         }
 
+
         ChannelExec channelssh = (ChannelExec) session.openChannel("exec");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -267,37 +287,36 @@ public class SSHConnection {
         channelssh.connect();
 
         channelssh.disconnect();
-
     }
 
-    public static void sendFile(File file, String remotePath) {
+    public static void sendFile(File file, String remotePath) throws InterruptedException {
         if (session == null || !session.isConnected()) {
             return;
         }
+        Thread thread = new Thread(() -> {
+            try {
 
-        ChannelSftp channelSftp = null;
+                ChannelSftp channelSftp = null;
 
-        try {
-            channelSftp = (ChannelSftp) session.openChannel("sftp");
-            channelSftp.connect();
+                try {
+                    channelSftp = (ChannelSftp) session.openChannel("sftp");
+                    channelSftp.connect();
 
-            try (FileInputStream fileInputStream = new FileInputStream(file);
-                 FileOutputStream outputStream = (FileOutputStream) channelSftp.put(remotePath)) {
+                    channelSftp.put(file.getAbsolutePath(), remotePath);
 
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (channelSftp != null) {
+                        channelSftp.disconnect();
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (channelSftp != null) {
-                channelSftp.disconnect();
-            }
-        }
+        });
+        thread.start();
+        thread.join();
     }
 
     public static void tour() {
@@ -312,10 +331,12 @@ public class SSHConnection {
         thread.start();
     }
 
-    public static void testingPrintingSats(String sat1, String sat2) {
+    public static void testingPrintingSats(String sat1, String sat2) throws InterruptedException {
         Thread thread = new Thread(() -> {
             try {
                 String command = null;
+                String command0 = "chmod 777 /var/www/html/kmls.txt; echo '' > /var/www/html/kmls.txt";
+                executeCommand(command0);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     command = "chmod 777 /var/www/html/satellites.kml; echo '" +
                             createKMLFile1(sat1, sat2) +
@@ -331,12 +352,13 @@ public class SSHConnection {
             }
         });
         thread.start();
+        thread.join();
     }
 
     public static void printSatInfo(String data, String collision) {
         Thread thread = new Thread(() -> {
             try {
-                String[] dataSection = data.replace("[","").replace("]", "").split(",");
+                String[] dataSection = data.replace("[", "").replace("]", "").split(",");
                 String sat1 = dataSection[0];
                 String satellite_id1 = dataSection[1];
                 String classification_type1 = dataSection[2];

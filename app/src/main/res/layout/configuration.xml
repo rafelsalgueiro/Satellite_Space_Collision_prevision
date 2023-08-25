@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="sscp.satellite_space_collision_prevision.Configuration"
+    tools:context="scp.satellite_space_collision_prevision.Configuration"
     tools:layout_editor_absoluteX="6dp"
     tools:layout_editor_absoluteY="0dp">
 

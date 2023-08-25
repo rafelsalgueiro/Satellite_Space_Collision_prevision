@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="sscp.satellite_space_collision_prevision.MainActivity">
+    tools:context="scp.satellite_space_collision_prevision.MainActivity">
 
 
     <View
@@ -50,15 +50,15 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/statusServer3"
+        android:id="@+id/statusServer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="605dp"
         android:layout_marginTop="121dp"
-        android:layout_marginEnd="607dp"
         android:text="@string/status"
         android:textSize="25sp"
         app:emojiCompatEnabled="false"
-        app:layout_constraintEnd_toEndOf="@+id/view4"
+        app:layout_constraintStart_toStartOf="@+id/view4"
         app:layout_constraintTop_toTopOf="@+id/view4" />
 
     <TextView
@@ -137,11 +137,12 @@
         app:layout_constraintTop_toTopOf="@+id/view5" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/info"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_marginTop="96dp"
         android:layout_marginEnd="216dp"
+        android:contentDescription="@string/information_of_the_app"
         app:layout_constraintEnd_toEndOf="@+id/view4"
         app:layout_constraintTop_toTopOf="@+id/view4"
         app:srcCompat="@android:drawable/ic_dialog_info" />
@@ -172,28 +173,28 @@
 
     <TextView
         android:id="@+id/probabilityText"
-        android:layout_width="247dp"
-        android:layout_height="58dp"
-        android:layout_marginEnd="192dp"
+        android:layout_width="431dp"
+        android:layout_height="68dp"
+        android:layout_marginStart="44dp"
         android:layout_marginBottom="20dp"
         android:text="@string/collision"
         android:textSize="28sp"
         app:layout_constraintBottom_toBottomOf="@+id/view5"
-        app:layout_constraintEnd_toEndOf="@+id/view5" />
+        app:layout_constraintStart_toStartOf="@+id/view5" />
 
     <TextView
         android:id="@+id/satInfo"
-        android:layout_width="252dp"
-        android:layout_height="216dp"
-        android:layout_marginTop="288dp"
-        android:layout_marginEnd="188dp"
+        android:layout_width="408dp"
+        android:layout_height="179dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="332dp"
         android:scrollbarSize="6sp"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/view5"
+        app:layout_constraintStart_toStartOf="@+id/view5"
         app:layout_constraintTop_toTopOf="@+id/view5" />
 
     <TextView
-        android:id="@+id/status"
+        android:id="@+id/LGStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="183dp"
@@ -214,18 +215,6 @@
         android:textSize="25sp"
         app:layout_constraintStart_toStartOf="@+id/view4"
         app:layout_constraintTop_toTopOf="@+id/view4" />
-
-    <TextView
-        android:id="@+id/statusServer2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="1756dp"
-        android:text="@string/status"
-        android:textSize="25sp"
-        app:emojiCompatEnabled="false"
-        app:layout_constraintBottom_toTopOf="@+id/numberSlaves"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/connectionText" />
 
     <TextView
         android:id="@+id/status2"
@@ -256,7 +245,7 @@
         android:layout_height="73dp"
         android:layout_marginEnd="88dp"
         android:layout_marginBottom="48dp"
-        android:text="100%"
+        android:text="large"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/view7"
         app:layout_constraintEnd_toEndOf="@+id/view7" />
@@ -267,7 +256,7 @@
         android:layout_height="73dp"
         android:layout_marginStart="64dp"
         android:layout_marginBottom="48dp"
-        android:text="25%"
+        android:text="Tiny"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/view7"
         app:layout_constraintStart_toStartOf="@+id/view7" />
@@ -278,7 +267,7 @@
         android:layout_height="73dp"
         android:layout_marginStart="216dp"
         android:layout_marginBottom="48dp"
-        android:text="50%"
+        android:text="Small"
         android:textSize="20sp"
 
         app:layout_constraintBottom_toBottomOf="@+id/view7"
@@ -290,7 +279,7 @@
         android:layout_height="73dp"
         android:layout_marginEnd="252dp"
         android:layout_marginBottom="48dp"
-        android:text="75%"
+        android:text="medium"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/view7"
         app:layout_constraintEnd_toEndOf="@+id/view7" />

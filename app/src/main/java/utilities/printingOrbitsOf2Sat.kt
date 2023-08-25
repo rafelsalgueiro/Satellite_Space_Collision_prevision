@@ -3,9 +3,13 @@ package utilities
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.*
+
+private var primaryCoordinates: String = ""
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun createKMLFile1(sat1: String, sat2: String): String {
@@ -54,12 +58,12 @@ fun createKMLFile1(sat1: String, sat2: String): String {
             "</kml>"
 
     val satellite1Coordinates = callToServer.getCoordinates(sat1)
-
+    primaryCoordinates = satellite1Coordinates
     val satellite2Coordinates = callToServer.getCoordinates(sat2)
 
 
-    val sat1 = satellite1Coordinates.split("\n")
-    val sat2 = satellite2Coordinates.split("\n")
+    val sat1 = satellite1Coordinates.replace("\",\"", "\n").split("\n")
+    val sat2 = satellite2Coordinates.replace("\",\"", "\n").split("\n")
     var closestDistance = Double.MAX_VALUE
     var midpointX = 0.0
     var midpointY = 0.0
@@ -98,8 +102,21 @@ fun createKMLFile1(sat1: String, sat2: String): String {
 
     getTour(satellite1Coordinates)
 
-    return kmlTemplate.replace("%satellite1Coordinates%", satellite1Coordinates)
-        .replace("%satellite2Coordinates%", satellite2Coordinates)
+    return kmlTemplate.replace(
+        "%satellite1Coordinates%",
+        satellite1Coordinates.replace("\",\"", "\n")
+    )
+        .replace("%satellite2Coordinates%", satellite2Coordinates.replace("\",\"", "\n"))
+}
+
+fun backButton() {
+    val coords = primaryCoordinates.split("\n")
+    SSHConnection.flyto(coords[0])
+}
+
+fun nextButton() {
+    val coords = primaryCoordinates.split("\n")
+    SSHConnection.flyto(coords[coords.size - 1])
 }
 
 fun getTour(coords: String) {
@@ -172,7 +189,6 @@ fun generateCircleCoordinates(
     val radius1 = 1.0
     val radius2 = 0.75
 
-    // Create a list of points that form the sphere
     val points = (0..180).step(10).flatMap { i ->
         (0..360).step(10).map { j ->
             val x = centerX + radius1 * cos(Math.toRadians(i.toDouble())) * sin(
@@ -193,7 +209,7 @@ fun generateCircleCoordinates(
 }
 
 
-fun orbitsOfSomeSat(satellites: Array<String>, context: Context){
+suspend fun orbitsOfSomeSat(satellites: Array<String>, context: Context) {
 
     var kml = "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
             "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
@@ -210,9 +226,9 @@ fun orbitsOfSomeSat(satellites: Array<String>, context: Context){
             "        </Style>\n" +
             "        \n"
 
-            for (sat in satellites){
-                val satellite1Coordinates = callToServer.getCoordinates(sat)
-                kml = kml + "        <Placemark>\n" +
+    for (sat in satellites) {
+        val satellite1Coordinates = callToServer.getCoordinates(sat)
+        kml += "        <Placemark>\n" +
                 "            <name>Satellite 1</name>\n" +
                 "            <styleUrl>#satellite1</styleUrl>\n" +
                 "            <LineString>\n" +
@@ -224,30 +240,32 @@ fun orbitsOfSomeSat(satellites: Array<String>, context: Context){
                 "        </Placemark>\n" +
                 "        \n"
 
-                kml = kml.replace("%satellite1Coordinates%", satellite1Coordinates)
-            }
-    kml = kml + "    </Document>\n" +
+        kml = kml.replace("%satellite1Coordinates%", satellite1Coordinates)
+    }
+    kml += "    </Document>\n" +
             "</kml>"
 
-    val fileName = "trajectories.kml"
-    val fileContents = kml.toByteArray()
-
     val internalFilesDir = context.filesDir
-    val file = File(internalFilesDir, fileName)
+    val file = File(internalFilesDir, "trajectories.kml")
 
-    try {
+    withContext(Dispatchers.IO) {
         val outputStream = FileOutputStream(file)
-        outputStream.write(fileContents)
+        outputStream.write(kml.toByteArray())
         outputStream.close()
-    } catch (e: Exception) {
-        e.printStackTrace()
+
+        print(file)
+
+
+        SSHConnection.sendFile(file, "/var/www/html/trajectories.kml")
+
+        val command2 = "chmod 777 /var/www/html/kmls.txt; echo '" +
+                "http://lg1:81/trajectories.kml" +
+                "' > /var/www/html/kmls.txt"
+
+        SSHConnection.executeCommand(command2)
     }
 
-    SSHConnection.sendFile(file, "/var/www/html/trajectories.kml")
 
-    val command2 = "chmod 777 /var/www/html/kmls.txt; echo '" +
-            "http://lg1:81/trajectories.kml" +
-            "' > /var/www/html/kmls.txt"
-    SSHConnection.executeCommand(command2)
+
 }
 
