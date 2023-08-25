@@ -1,8 +1,15 @@
 package utilities
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import kotlin.math.*
+
+private var primaryCoordinates: String = ""
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun createKMLFile1(sat1: String, sat2: String): String {
@@ -51,16 +58,18 @@ fun createKMLFile1(sat1: String, sat2: String): String {
             "</kml>"
 
     val satellite1Coordinates = callToServer.getCoordinates(sat1)
-
+    primaryCoordinates = satellite1Coordinates
     val satellite2Coordinates = callToServer.getCoordinates(sat2)
 
-    val sat1 = satellite1Coordinates.split("\n")
-    val sat2 = satellite2Coordinates.split("\n")
+
+    val sat1 = satellite1Coordinates.replace("\",\"", "\n").split("\n")
+    val sat2 = satellite2Coordinates.replace("\",\"", "\n").split("\n")
     var closestDistance = Double.MAX_VALUE
     var midpointX = 0.0
     var midpointY = 0.0
     var finalX = Double.MAX_VALUE
     var finalY = Double.MAX_VALUE
+    var finalZ = Double.MAX_VALUE
     for (pos1 in sat1) {
         for (pos2 in sat2) {
             val positions1 = pos1.split(",")
@@ -81,21 +90,33 @@ fun createKMLFile1(sat1: String, sat2: String): String {
                 closestDistance = distance
                 finalX = midpointX
                 finalY = midpointY
-
+                finalZ = positions1[2].toDouble()
             }
         }
     }
 
     SSHConnection.flyto("${finalX},${finalY},0")
-    val circleCoordinates = generateCircleCoordinates(finalX, finalY)
+    val circleCoordinates = generateCircleCoordinates(finalX, finalY, finalZ)
 
     SSHConnection.printCollision(circleCoordinates)
 
-
     getTour(satellite1Coordinates)
 
-    return kmlTemplate.replace("%satellite1Coordinates%", satellite1Coordinates.replace(" ", ""))
-        .replace("%satellite2Coordinates%", satellite2Coordinates.replace(" ", ""))
+    return kmlTemplate.replace(
+        "%satellite1Coordinates%",
+        satellite1Coordinates.replace("\",\"", "\n")
+    )
+        .replace("%satellite2Coordinates%", satellite2Coordinates.replace("\",\"", "\n"))
+}
+
+fun backButton() {
+    val coords = primaryCoordinates.split("\n")
+    SSHConnection.flyto(coords[0])
+}
+
+fun nextButton() {
+    val coords = primaryCoordinates.split("\n")
+    SSHConnection.flyto(coords[coords.size - 1])
 }
 
 fun getTour(coords: String) {
@@ -162,18 +183,89 @@ fun getTour(coords: String) {
 fun generateCircleCoordinates(
     centerX: Double,
     centerY: Double,
+    centerZ: Double
 ): String {
-    val radius = 10
-    val numPoints = 250
     val coordinates = StringBuilder()
-    for (i in 0 until numPoints) {
-        val angle = 2 * PI * i / numPoints.toDouble()
-        val x = centerX + radius * cos(angle)
-        val y = centerY + radius * sin(angle)
-        coordinates.append("$x,$y,0.0\n")
+    val radius1 = 1.0
+    val radius2 = 0.75
+
+    val points = (0..180).step(10).flatMap { i ->
+        (0..360).step(10).map { j ->
+            val x = centerX + radius1 * cos(Math.toRadians(i.toDouble())) * sin(
+                Math.toRadians(
+                    j.toDouble()
+                )
+            )
+            val y = centerY + radius2 * sin(Math.toRadians(i.toDouble())) * sin(
+                Math.toRadians(
+                    j.toDouble()
+                )
+            )
+            val z = centerZ + radius1 * 100000 * cos(Math.toRadians(j.toDouble()))
+            coordinates.append("$x,$y,$z\n")
+        }
     }
-    val angle = 2 * PI * 0 / numPoints.toDouble()
-    coordinates.append("${centerX + radius * cos(angle)},${centerY + radius * sin(angle)},0.0\n")
     return coordinates.toString()
+}
+
+
+suspend fun orbitsOfSomeSat(satellites: Array<String>, context: Context) {
+
+    var kml = "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
+            "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
+            " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
+            "    <Document>\n" +
+            "        <name>Satellite Trajectories</name>\n" +
+            "        \n" +
+            " <open>1</open>\n" +
+            "        <Style id=\"satellite1\">\n" +
+            "            <LineStyle>\n" +
+            "                <color>ff0000ff</color>\n" +
+            "                <width>2</width>\n" +
+            "            </LineStyle>\n" +
+            "        </Style>\n" +
+            "        \n"
+
+    for (sat in satellites) {
+        val satellite1Coordinates = callToServer.getCoordinates(sat)
+        kml += "        <Placemark>\n" +
+                "            <name>Satellite 1</name>\n" +
+                "            <styleUrl>#satellite1</styleUrl>\n" +
+                "            <LineString>\n" +
+                "                <extrude>1</extrude>\n" +
+                "                <tessellate>1</tessellate>\n" +
+                "                <altitudeMode>absolute</altitudeMode>\n" +
+                "                <coordinates>%satellite1Coordinates%</coordinates>\n" +
+                "            </LineString>\n" +
+                "        </Placemark>\n" +
+                "        \n"
+
+        kml = kml.replace("%satellite1Coordinates%", satellite1Coordinates)
+    }
+    kml += "    </Document>\n" +
+            "</kml>"
+
+    val internalFilesDir = context.filesDir
+    val file = File(internalFilesDir, "trajectories.kml")
+
+    withContext(Dispatchers.IO) {
+        val outputStream = FileOutputStream(file)
+        outputStream.write(kml.toByteArray())
+        outputStream.close()
+
+        print(file)
+
+
+        SSHConnection.sendFile(file, "/var/www/html/trajectories.kml")
+
+        val command2 = "chmod 777 /var/www/html/kmls.txt; echo '" +
+                "http://lg1:81/trajectories.kml" +
+                "' > /var/www/html/kmls.txt"
+
+        SSHConnection.executeCommand(command2)
+    }
+
+
+
 }
 

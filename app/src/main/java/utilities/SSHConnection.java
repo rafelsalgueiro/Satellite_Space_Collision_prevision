@@ -3,17 +3,19 @@ package utilities;
 import static utilities.PrintingOrbitsOf2SatKt.createKMLFile1;
 
 import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Properties;
 
 public class SSHConnection {
     private final String ipAddress;
     private final String password;
-    private final int numSlaves;
+    private static int numSlaves;
     private String logoSlaves;
 
     private static String infoSlave;
@@ -24,7 +26,7 @@ public class SSHConnection {
     public SSHConnection(String ipAddress, String password, int numSlaves) {
         this.ipAddress = ipAddress;
         this.password = password;
-        this.numSlaves = numSlaves;
+        SSHConnection.numSlaves = numSlaves;
 
     }
 
@@ -41,7 +43,7 @@ public class SSHConnection {
         return (numSlaves / 2) + 2;
     }
 
-    public int rightScreen() {
+    public static int rightScreen() {
 
         if (numSlaves == 1) {
             return 1;
@@ -120,6 +122,28 @@ public class SSHConnection {
         thread.start();
     }
 
+    public static void cleanBaloon() {
+        Thread thread = new Thread(() -> {
+            try {
+                String slaves = "slave_" + rightScreen();
+                String command = "chmod 777 /var/www/html/kml/" + slaves + ".kml; echo '" +
+                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\"\n" +
+                        "xmlns:atom=\"http://www.w3.org/2005/Atom\" \n" +
+                        " xmlns:gx=\"http://www.google.com/kml/ext/2.2\"> \n" +
+                        " <Document id=\"" + slaves + "\">\n " +
+                        " </Document> \n" +
+                        " </kml>\n' > /var/www/html/kml/" + slaves + ".kml";
+                executeCommand(command);
+
+                String command2 = "chmod 777 /var/www/html/kmls.txt; echo '' > /var/www/html/kmls.txt";
+                executeCommand(command2);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
     public void cleanKml() {
         Thread thread = new Thread(() -> {
             try {
@@ -148,7 +172,7 @@ public class SSHConnection {
         Thread thread = new Thread(() -> {
             try {
                 String[] pos = poi.split(",");
-                String command = "echo 'flytoview=<gx:duration>5</gx:duration><LookAt><longitude>"+pos[0]+"</longitude><latitude>"+pos[1]+"</latitude><altitude>25000000</altitude><heading>0</heading><tilt>0</tilt><range>1492.66</range><gx:altitudeMode>relativeToGround</gx:altitudeMode></LookAt>' > /tmp/query.txt";
+                String command = "echo 'flytoview=<gx:duration>5</gx:duration><LookAt><longitude>" + pos[0] + "</longitude><latitude>" + pos[1] + "</latitude><altitude>25000000</altitude><heading>0</heading><tilt>0</tilt><range>1492.66</range><gx:altitudeMode>relativeToGround</gx:altitudeMode></LookAt>' > /tmp/query.txt";
                 executeCommand(command);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -156,7 +180,6 @@ public class SSHConnection {
         });
         thread.start();
     }
-
 
     public void hideLogos() {
         Thread thread = new Thread(() -> {
@@ -214,6 +237,33 @@ public class SSHConnection {
         thread.start();
     }
 
+    public void relaunch() {
+        Thread thread = new Thread(() -> {
+            try {
+                String sentence = "/home/lg/bin/lg-relaunch > /home/lg/log.txt;\n " +
+                        "RELAUNCH_CMD=\"\\\n" +
+                        "if [ -f /etc/init/lxdm.conf ]; then\n" +
+                        "  export SERVICE=lxdm\n" +
+                        "elif [ -f /etc/init/lightdm.conf ]; then\n" +
+                        "  export SERVICE=lightdm\n" +
+                        "else\n" +
+                        "  exit 1\n" +
+                        "fi\n" +
+                        "if  [[ \\$(service \\$SERVICE status) =~ 'stop' ]]; then\n" +
+                        "  echo " + password + " | sudo -S service \\${SERVICE} start\n" +
+                        "else\n" +
+                        "  echo " + password + " | sudo -S service \\${SERVICE} restart\n" +
+                        "fi\n" +
+                        "\" && sshpass -p " + password + " ssh -x -t lg@lg1 \"$RELAUNCH_CMD\"";
+                executeCommand(sentence);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+
     public void disconnect() {
         if (session != null) {
             session.disconnect();
@@ -226,6 +276,7 @@ public class SSHConnection {
             return;
         }
 
+
         ChannelExec channelssh = (ChannelExec) session.openChannel("exec");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -236,7 +287,36 @@ public class SSHConnection {
         channelssh.connect();
 
         channelssh.disconnect();
+    }
 
+    public static void sendFile(File file, String remotePath) throws InterruptedException {
+        if (session == null || !session.isConnected()) {
+            return;
+        }
+        Thread thread = new Thread(() -> {
+            try {
+
+                ChannelSftp channelSftp = null;
+
+                try {
+                    channelSftp = (ChannelSftp) session.openChannel("sftp");
+                    channelSftp.connect();
+
+                    channelSftp.put(file.getAbsolutePath(), remotePath);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (channelSftp != null) {
+                        channelSftp.disconnect();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+        thread.join();
     }
 
     public static void tour() {
@@ -251,13 +331,15 @@ public class SSHConnection {
         thread.start();
     }
 
-    public static void testingPrintingSats() {
+    public static void testingPrintingSats(String sat1, String sat2) throws InterruptedException {
         Thread thread = new Thread(() -> {
             try {
                 String command = null;
+                String command0 = "chmod 777 /var/www/html/kmls.txt; echo '' > /var/www/html/kmls.txt";
+                executeCommand(command0);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     command = "chmod 777 /var/www/html/satellites.kml; echo '" +
-                            createKMLFile1("TIANZHOU-6", "CALSPHERE 1") +
+                            createKMLFile1(sat1, sat2) +
                             "' > /var/www/html/satellites.kml";
                 }
                 executeCommand(command);
@@ -270,18 +352,19 @@ public class SSHConnection {
             }
         });
         thread.start();
+        thread.join();
     }
 
     public static void printSatInfo(String data, String collision) {
         Thread thread = new Thread(() -> {
             try {
-                String[] dataSection = data.split(",");
-                String sat1 = dataSection[0].replace("?", "").replace("[", "").replace("]", "");
-                String tle11 = dataSection[1].replace("?", "").replace("[", "").replace("]", "");
-                String tle12 = dataSection[2].replace("?", "").replace("[", "").replace("]", "");
-                String sat2 = dataSection[3].replace("?", "").replace("[", "").replace("]", "");
-                String tle21 = dataSection[4].replace("?", "").replace("[", "").replace("]", "");
-                String tle22 = dataSection[5].replace("?", "").replace("[", "").replace("]", "");
+                String[] dataSection = data.replace("[", "").replace("]", "").split(",");
+                String sat1 = dataSection[0];
+                String satellite_id1 = dataSection[1];
+                String classification_type1 = dataSection[2];
+                String sat2 = dataSection[4];
+                String satellite_id2 = dataSection[5];
+                String classification_type2 = dataSection[6];
                 String command = "chmod 777 /var/www/html/kml/" + infoSlave + ".kml; echo '" +
                         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n" +
@@ -299,23 +382,24 @@ public class SSHConnection {
                         "   <description><![CDATA[<!-- BalloonStyle background color:\n" +
                         "                ffffffff\n" +
                         "     -->" +
+                        "<table width=\"400\" height=\"300\" align=\"left\">" +
                         " <tr>\n" +
                         "   <td colspan=\"2\" align=\"center\">\n" +
                         "     <h2>%sat1%</font></h2>\n" +
-                        "     <h3>TLE 1: %tle11%</font></h3>\n" +
-                        "     <h3>TLE 1: %tle12%</font></h3>\n" +
+                        "     <h3>    %tle11%</font></h3>\n" +
+                        "     <h3>    %tle12%</font></h3>\n" +
                         "   </td>\n" +
                         " </tr>\n" +
                         " <tr>\n" +
                         "   <td colspan=\"2\" align=\"center\">\n" +
                         "     <h2>%sat2%</font></h2>\n" +
-                        "     <h3>TLE 1: %tle21%</font></h3>\n" +
-                        "     <h3>TLE 1: %tle22%</font></h3>\n" +
+                        "     <h3>    %tle21%</font></h3>\n" +
+                        "     <h3>    %tle22%</font></h3>\n" +
                         "   </td>\n" +
                         " </tr>\n" +
                         " <tr>\n" +
                         "   <td colspan=\"2\" align=\"center\">\n" +
-                        "     <h2>Collision: %collision% </font></h2>\n" +
+                        "     <h1>Collision: %collision% </font></h1>\n" +
                         "</table>]]></description>\n" +
                         "   <LookAt>\n" +
                         "     <longitude>-17.841486</longitude>\n" +
@@ -334,7 +418,7 @@ public class SSHConnection {
                         "</Document>\n" +
                         "</kml>\n' > /var/www/html/kml/" + infoSlave + ".kml";
 
-                String kmlContent = command.replace("%sat1%", "sat1").replace("%tle11%", "tle11").replace("%tle12%", "tle12").replace("%sat2%", "sat2").replace("%tle21%", "tle21").replace("%tle22%", "tle22").replace("%collision%", collision);
+                String kmlContent = command.replace("%sat1%", sat1).replace("%tle11%", satellite_id1).replace("%tle12%", classification_type1).replace("%sat2%", sat2).replace("%tle21%", satellite_id2).replace("%tle22%", classification_type2).replace("%collision%", collision);
                 executeCommand(kmlContent);
 
 
@@ -359,8 +443,8 @@ public class SSHConnection {
                         "            </LineStyle>\n" +
                         "\n" +
                         "            <PolyStyle>\n" +
-                        "                <color>640000ff</color>\n" +
-                        "                <altitudeMode>relativeToGround</altitudeMode>\n" +
+                        "                <color>000000ff</color>\n" +
+                        "                <altitudeMode>absolute</altitudeMode>\n" +
                         "                <colorMode>normal</colorMode>\n" +
                         "                <fill>1</fill>\n" +
                         "                <outline>1</outline>\n" +
@@ -371,7 +455,9 @@ public class SSHConnection {
                         "      <name>Collision</name>\n" +
                         "      <styleUrl>style_dfym</styleUrl>\n" +
                         "            <Polygon id=\"Path\">\n" +
+                        "<altitudeMode>absolute</altitudeMode>\n" +
                         "        <extrude>0</extrude>\n" +
+                        "<tessellate>true</tessellate>\n" +
                         "        <outerBoundaryIs>\n" +
                         "          <LinearRing>\n" +
                         "            <coordinates>\n" +

@@ -29,4 +29,25 @@
     <string name="hide_logos">Hide logos</string>
     <string name="logos">logos</string>
     <string name="title_activity_splash_screen">SplashScreen</string>
+    <string name="commands">Commands</string>
+    <string name="relaunch">relaunch</string>
+    <string name="server">Server</string>
+    <string name="information_of_the_app">information of the app</string>
+    <string name="author">Author</string>
+    <string name="satellite_space_collision_prevision_is_an_application_that_allows_you_to_see_the_satellites_that_are_in_danger_of_colliding_with_each_other_the_application_uses_the_data_provided_by_the_space_track_org_website_which_is_updated_daily_this_project_was_created_as_a_part_of_google_summer_of_code_2023_under_liquid_galaxy">Satellite Space Collision Prevision is an application that allows you to see the satellites that are in danger of colliding with each other. The application uses the data provided by the Space-Track.org website, which is updated daily. This project was created as a part of Google Summer of Code 2023 under Liquid Galaxy. To use this app please visit https://raw.githubusercontent.com/rafelsalgueiro/Satellite_Space_Collision_prevision/master/README.md .</string>
+    <string name="satellite_space_collision_prevision">Satellite Space Collision Prevision</string>
+    <string name="mentor">Mentors</string>
+    <string name="lleida_liquid_galaxy_lab_support">Lleida Liquid Galaxy LAB support</string>
+    <string name="pau_francino">Pau Francino</string>
+    <string name="ivan_josa">Ivan Josa</string>
+    <string name="mois_s_mart_nez">Moisés Martínez</string>
+    <string name="andreu_iba_ez">Andreu Ibañez</string>
+    <string name="rafel_salgueiro_santacreu">Rafel Salgueiro Santacreu</string>
+    <string name="albert_ricard">Albert Ricard</string>
+    <string name="navdeep_singh">Navdeep Singh</string>
+    <string name="imad_laichi">Imad Laichi</string>
+    <string name="mohamed_zazu">Mohamed Zazu</string>
+    <string name="all_logos">All logos</string>
+    <string name="unai_franch">Unai Franch</string>
+    <string name="contact">Contact</string>
 </resources>
